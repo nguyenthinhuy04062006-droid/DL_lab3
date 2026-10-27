@@ -32,7 +32,7 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
 | **M3** | **Models Architecture** | Hiện thực `BaselineMLP` (~203k params) và `SimpleCNN` (~38k params) | ✅ Done | `src/fashionmnist/models/`, `tests/test_model.py` |
 | **M4** | **Train Engine** | Vòng lặp `train()` và `eval()`, loss, optimizer, scheduler, early stopping | ✅ Done | `src/fashionmnist/training/`, `tests/test_training.py` |
 | **M5** | **Checkpoint Management** | Cơ chế lưu và nạp an toàn (`weights_only=True`, `map_location`) | ✅ Done | `src/fashionmnist/training/checkpoint.py`, `tests/test_checkpoint.py` |
-| **M6** | **Sanity Checks** | Overfit trên 1 micro-batch (16 mẫu), kiểm tra gradient flow | 📋 Todo | Script kiểm tra tính toàn vẹn |
+| **M6** | **Sanity Checks** | Overfit trên 1 micro-batch (16 mẫu), kiểm tra gradient flow | ✅ Done | `src/fashionmnist/training/sanity_checks.py`, `scripts/run_sanity_checks.py`, `tests/test_sanity.py` |
 | **M7** | **Controlled Experiments** | Thực thi 5 thực nghiệm đối chứng có kiểm soát (E1 $\to$ E5) | 📋 Todo | `artifacts/experiments/*.json` |
 | **M8** | **Final Evaluation** | Đánh giá mô hình tốt nhất trên Test set duy nhất (10.000 mẫu) | 📋 Todo | `artifacts/metrics/final_test.json`, `classification_report.csv` |
 | **M9** | **Visualization & Analysis** | Biểu đồ Loss/Acc, Confusion Matrix, Error Analysis, Per-class F1 | 📋 Todo | `artifacts/figures/*.png` |
@@ -108,4 +108,14 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
     - Đảm bảo an toàn tuyệt đối với cờ `weights_only=True` và `map_location` linh hoạt giữa CPU/GPU.
     - Xây dựng bộ kiểm thử độc lập [tests/test_checkpoint.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/tests/test_checkpoint.py) kiểm thử cấu trúc lưu, khôi phục trọng số, đặt tên file best model và bẫy ngoại lệ `FileNotFoundError` (4/4 tests PASS, tổng dự án đạt 30/30 tests PASS).
     - Vượt qua 5/5 tiêu chuẩn của `scripts/check_rules.py`.
-    - Trạng thái Module M5: `✅ Done`. Sẵn sàng cho Module M6.
+    - Trạng thái Module M5: `✅ Done`.
+  - **Hoàn thành Module M6 — Sanity Checks:**
+    - Xây dựng [src/fashionmnist/training/sanity_checks.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/training/sanity_checks.py) bao gồm 3 khâu rà soát tiên quyết:
+      1. Kiểm tra Loss ban đầu: đo lường sai lệch so với giá trị kỳ vọng lý thuyết $\ln(10) \approx 2.3025$ (kết quả thực tế: BaselineMLP = 2.2814, SimpleCNN = 2.3081).
+      2. Kiểm tra Gradient Flow: tính toán $L_2$ norm gradient của tất cả các tầng tham số, đảm bảo không có tầng nào bị vanishing hay exploding gradient.
+      3. Overfit Micro-batch (16 mẫu): ép loss về sát 0 và đạt độ chính xác 100% trong dưới 80 bước lặp.
+    - Xây dựng công cụ CLI thực thi [scripts/run_sanity_checks.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/scripts/run_sanity_checks.py) chạy trực tiếp trên 1 micro-batch thực tế từ FashionMNIST.
+    - Xây dựng bộ kiểm thử tự động [tests/test_sanity.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/tests/test_sanity.py) (7/7 tests PASS, tổng toàn dự án đạt 37/37 tests PASS).
+    - Vượt qua 5/5 bài kiểm tra quy chuẩn của `scripts/check_rules.py`.
+    - Trạng thái Module M6: `✅ Done`. Sẵn sàng cho Module M7 (Controlled Experiments).
+
