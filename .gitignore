@@ -1,0 +1,22 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.cache/
+huggingface_cache/
+
+# FashionMNIST artifacts & data
+data/FashionMNIST/
+artifacts/checkpoints/*.pt
+artifacts/predictions/*
+*.pt
+.pytest_cache/
+
+# Outputs
+outputs/checkpoints/
+outputs/final_model/
+outputs/logs/
+outputs/*.png
+outputs/*.csv
+outputs/*.json
+
