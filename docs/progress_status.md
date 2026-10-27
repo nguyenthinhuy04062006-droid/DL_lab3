@@ -28,7 +28,7 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
 |:---:|---|---|:---:|---|
 | **M0** | **Learn & Environment Setup** | Kiểm tra môi trường, tạo `.gitignore`, `RULES.md`, `scripts/check_rules.py`, `AI_Usage.md`, `requirements.txt` | ✅ Done | `RULES.md`, `scripts/check_rules.py`, `AI_Usage.md`, `requirements.txt` |
 | **M1** | **Config & Utils** | Quản lý cấu hình YAML, tiện ích `set_seed()`, `get_device()`, logger | ✅ Done | `configs/*.yaml`, `src/fashionmnist/utils/`, `src/fashionmnist/config.py`, `tests/test_config.py` |
-| **M2** | **Data Pipeline** | Tải FashionMNIST, transforms không rò rỉ dữ liệu, stratified split 80/20, DataLoader | 📋 Todo | `src/fashionmnist/data/`, `tests/test_dataset.py` |
+| **M2** | **Data Pipeline** | Tải FashionMNIST, transforms không rò rỉ dữ liệu, stratified split 80/20, DataLoader | ✅ Done | `src/fashionmnist/data/`, `tests/test_dataset.py` |
 | **M3** | **Models Architecture** | Hiện thực `BaselineMLP` (~203k params) và `SimpleCNN` (~38k params) | 📋 Todo | `src/fashionmnist/models/`, `tests/test_model.py` |
 | **M4** | **Train Engine** | Vòng lặp `train()` và `eval()`, loss, optimizer, scheduler, early stopping | 📋 Todo | `src/fashionmnist/training/trainer.py`, `test_training.py` |
 | **M5** | **Checkpoint Management** | Cơ chế lưu và nạp an toàn (`weights_only=True`, `map_location`) | 📋 Todo | `src/fashionmnist/training/checkpoint.py`, `test_checkpoint.py` |
@@ -84,4 +84,10 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
     - Xây dựng [src/fashionmnist/config.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/config.py) hỗ trợ deep merge, tự động resolve đường dẫn tuyệt đối dựa trên `PROJECT_ROOT`, và xác thực ràng buộc 10 lớp.
     - Xây dựng [src/fashionmnist/utils/reproducibility.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/utils/reproducibility.py) quản lý `set_seed()`, tự động chọn thiết bị `get_device()` (CUDA -> MPS -> CPU), và xuất thông tin môi trường.
     - Xây dựng [tests/test_config.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/tests/test_config.py) và chạy thành công 5/5 unit test (100% PASS).
-    - Trạng thái Module M1: `✅ Done`. Sẵn sàng cho Module M2.
+  - **Hoàn thành Module M2 — Data Pipeline:**
+    - Tải và đồng bộ toàn bộ bộ dữ liệu FashionMNIST (60.000 mẫu train, 10.000 mẫu test) vào `data/raw/FashionMNIST`.
+    - Xây dựng [src/fashionmnist/data/transforms.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/data/transforms.py) phân định nghiêm ngặt pipeline: áp dụng Data Augmentation (RandomHorizontalFlip, RandomCrop) độc quyền cho tập Train; giữ pipeline tất định (ToTensor + Normalize) cho Val và Test; chuẩn hóa Z-score với $\mu=0.2860, \sigma=0.3530$.
+    - Xây dựng [src/fashionmnist/data/dataset.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/data/dataset.py) với giải thuật phân chia phân tầng (Stratified Split 80/20: 48.000 train / 12.000 val), kiểm tra không chồng lấn (`verify_no_overlap`), và đóng gói DataLoader (`build_dataloaders`).
+    - Xây dựng [tests/test_dataset.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/tests/test_dataset.py) và chạy thành công 5/5 unit test (100% PASS).
+    - Cài đặt `torchvision` (v0.29.1) tương thích với PyTorch 2.14.1.
+    - Trạng thái Module M2: `✅ Done`. Sẵn sàng cho Module M3.
