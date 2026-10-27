@@ -30,7 +30,7 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
 | **M1** | **Config & Utils** | Quản lý cấu hình YAML, tiện ích `set_seed()`, `get_device()`, logger | ✅ Done | `configs/*.yaml`, `src/fashionmnist/utils/`, `src/fashionmnist/config.py`, `tests/test_config.py` |
 | **M2** | **Data Pipeline** | Tải FashionMNIST, transforms không rò rỉ dữ liệu, stratified split 80/20, DataLoader | ✅ Done | `src/fashionmnist/data/`, `tests/test_dataset.py` |
 | **M3** | **Models Architecture** | Hiện thực `BaselineMLP` (~203k params) và `SimpleCNN` (~38k params) | ✅ Done | `src/fashionmnist/models/`, `tests/test_model.py` |
-| **M4** | **Train Engine** | Vòng lặp `train()` và `eval()`, loss, optimizer, scheduler, early stopping | 📋 Todo | `src/fashionmnist/training/trainer.py`, `test_training.py` |
+| **M4** | **Train Engine** | Vòng lặp `train()` và `eval()`, loss, optimizer, scheduler, early stopping | ✅ Done | `src/fashionmnist/training/`, `tests/test_training.py` |
 | **M5** | **Checkpoint Management** | Cơ chế lưu và nạp an toàn (`weights_only=True`, `map_location`) | 📋 Todo | `src/fashionmnist/training/checkpoint.py`, `test_checkpoint.py` |
 | **M6** | **Sanity Checks** | Overfit trên 1 micro-batch (16 mẫu), kiểm tra gradient flow | 📋 Todo | Script kiểm tra tính toàn vẹn |
 | **M7** | **Controlled Experiments** | Thực thi 5 thực nghiệm đối chứng có kiểm soát (E1 $\to$ E5) | 📋 Todo | `artifacts/experiments/*.json` |
@@ -95,4 +95,11 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
     - Xây dựng mạng tích chập [SimpleCNN](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/models/network.py#L60) (~38.122 tham số, 2 khối ConvBlock kèm BatchNorm + MaxPool, Global Average Pooling nén feature map về 1x1, Dropout=0.3).
     - Xây dựng hàm factory `build_model(cfg)` và hàm tính số lượng tham số `count_parameters()`.
     - Xây dựng [tests/test_model.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/tests/test_model.py) và chạy thành công 7/7 unit test (100% PASS), tổng test suite toàn dự án đạt 17/17 tests PASS.
-    - Trạng thái Module M3: `✅ Done`. Sẵn sàng cho Module M4.
+    - Trạng thái Module M3: `✅ Done`.
+  - **Hoàn thành Module M4 — Train Engine:**
+    - Xây dựng [src/fashionmnist/training/checkpoint.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/training/checkpoint.py) với cơ chế lưu và nạp checkpoint an toàn tuân thủ `weights_only=True` và `map_location`.
+    - Xây dựng [src/fashionmnist/training/trainer.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/training/trainer.py) chứa đầy đủ các khâu: `train_one_epoch` (`model.train()`, `optimizer.zero_grad()`, `loss.backward()`, `optimizer.step()`), `evaluate_one_epoch` (`@torch.no_grad()`, `model.eval()`), `build_optimizer`, `build_scheduler` (CosineAnnealing, StepLR), và hàm tổng `train()` tích hợp cơ chế Early Stopping theo dõi validation accuracy.
+    - Xây dựng [src/fashionmnist/training/__init__.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/training/__init__.py) xuất khẩu đầy đủ giao diện huấn luyện.
+    - Xây dựng [tests/test_training.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/tests/test_training.py) gồm 9 unit tests bao quát toàn bộ optimizer, scheduler, forward/backward weight update, eval invariance, checkpoint roundtrip (weights_only=True) và train loop.
+    - Kiểm thử tự động đạt 9/9 unit tests PASS (tổng dự án đạt 26/26 tests PASS) và vượt qua 5/5 bài kiểm tra `scripts/check_rules.py`.
+    - Trạng thái Module M4: `✅ Done`. Sẵn sàng cho Module M5/M6.
