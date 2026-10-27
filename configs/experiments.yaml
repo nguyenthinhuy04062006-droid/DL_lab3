@@ -1,0 +1,89 @@
+# =============================================================================
+# FashionMNIST Deep Learning — Experiments Configuration
+# 5 Thực nghiệm có đối chứng (Single-factor variation):
+# E1: baseline_mlp   - MLP + SGD (lr=0.01, epochs=10, bs=128)
+# E2: mlp_adam       - MLP + Adam (lr=0.001, epochs=15, bs=128)
+# E3: exp_cnn_small  - CNN + Adam (lr=0.001, epochs=15, bs=128)
+# E4: exp_lr_01      - CNN + Adam (lr=0.01, epochs=15, bs=128)
+# E5: exp_batch_256  - CNN + Adam (lr=0.001, epochs=15, bs=256)
+# =============================================================================
+
+experiments:
+
+  baseline_mlp:
+    description: "E1: Baseline MLP — Flatten + 2 Linear layers + SGD optimizer"
+    model:
+      architecture: BaselineMLP
+      hidden_units: 256
+      dropout: 0.0
+    training:
+      epochs: 10
+      optimizer: sgd
+      learning_rate: 0.01
+      weight_decay: 0.0
+      lr_scheduler: null
+    dataloader:
+      batch_size: 128
+
+  mlp_adam:
+    description: "E2: MLP with Adam optimizer & 15 epochs"
+    model:
+      architecture: BaselineMLP
+      hidden_units: 256
+      dropout: 0.0
+    training:
+      epochs: 15
+      optimizer: adam
+      learning_rate: 0.001
+      weight_decay: 0.0001
+      lr_scheduler: cosine
+    dataloader:
+      batch_size: 128
+
+  exp_cnn_small:
+    description: "E3: Standard Small CNN — 2 Conv blocks + GAP + Dropout"
+    model:
+      architecture: SimpleCNN
+      hidden_channels: [32, 64]
+      fc_hidden: 256
+      dropout: 0.3
+    training:
+      epochs: 15
+      optimizer: adam
+      learning_rate: 0.001
+      weight_decay: 0.0001
+      lr_scheduler: cosine
+    dataloader:
+      batch_size: 128
+
+  exp_lr_01:
+    description: "E4: SimpleCNN with Higher Learning Rate (lr=0.01)"
+    model:
+      architecture: SimpleCNN
+      hidden_channels: [32, 64]
+      fc_hidden: 256
+      dropout: 0.3
+    training:
+      epochs: 15
+      optimizer: adam
+      learning_rate: 0.01
+      weight_decay: 0.0001
+      lr_scheduler: cosine
+    dataloader:
+      batch_size: 128
+
+  exp_batch_256:
+    description: "E5: SimpleCNN with Larger Batch Size (batch_size=256)"
+    model:
+      architecture: SimpleCNN
+      hidden_channels: [32, 64]
+      fc_hidden: 256
+      dropout: 0.3
+    training:
+      epochs: 15
+      optimizer: adam
+      learning_rate: 0.001
+      weight_decay: 0.0001
+      lr_scheduler: cosine
+    dataloader:
+      batch_size: 256

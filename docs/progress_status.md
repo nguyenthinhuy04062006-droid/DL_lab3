@@ -27,7 +27,7 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
 | Mã Module | Tên Module | Trọng tâm công việc | Trạng thái | Artifacts Đầu ra Chính |
 |:---:|---|---|:---:|---|
 | **M0** | **Learn & Environment Setup** | Kiểm tra môi trường, tạo `.gitignore`, `RULES.md`, `scripts/check_rules.py`, `AI_Usage.md`, `requirements.txt` | ✅ Done | `RULES.md`, `scripts/check_rules.py`, `AI_Usage.md`, `requirements.txt` |
-| **M1** | **Config & Utils** | Quản lý cấu hình YAML, tiện ích `set_seed()`, `get_device()`, logger | 📋 Todo | `configs/*.yaml`, `src/fashionmnist/utils/`, `src/fashionmnist/config.py`, `tests/test_config.py` |
+| **M1** | **Config & Utils** | Quản lý cấu hình YAML, tiện ích `set_seed()`, `get_device()`, logger | ✅ Done | `configs/*.yaml`, `src/fashionmnist/utils/`, `src/fashionmnist/config.py`, `tests/test_config.py` |
 | **M2** | **Data Pipeline** | Tải FashionMNIST, transforms không rò rỉ dữ liệu, stratified split 80/20, DataLoader | 📋 Todo | `src/fashionmnist/data/`, `tests/test_dataset.py` |
 | **M3** | **Models Architecture** | Hiện thực `BaselineMLP` (~203k params) và `SimpleCNN` (~38k params) | 📋 Todo | `src/fashionmnist/models/`, `tests/test_model.py` |
 | **M4** | **Train Engine** | Vòng lặp `train()` và `eval()`, loss, optimizer, scheduler, early stopping | 📋 Todo | `src/fashionmnist/training/trainer.py`, `test_training.py` |
@@ -78,4 +78,10 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
     - Tạo công cụ tự động kiểm tra quy tắc [scripts/check_rules.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/scripts/check_rules.py) (vượt qua 5/5 bài kiểm tra).
     - Khởi tạo báo cáo sử dụng AI [AI_Usage.md](file:///c:/Users/user/Downloads/practice3_huggingface_project/AI_Usage.md) đúng 7 mục tiêu chuẩn.
     - Cập nhật [.gitignore](file:///c:/Users/user/Downloads/practice3_huggingface_project/.gitignore) loại trừ checkpoint và file nhị phân.
-    - Trạng thái Module M0: `✅ Done`. Sẵn sàng cho Module M1.
+  - **Hoàn thành Module M1 — Config & Utils:**
+    - Khởi tạo [configs/default.yaml](file:///c:/Users/user/Downloads/practice3_huggingface_project/configs/default.yaml) (siêu tham số mặc định chuẩn hóa: seed=42, split=80/20, lr=0.001, bs=128).
+    - Khởi tạo [configs/experiments.yaml](file:///c:/Users/user/Downloads/practice3_huggingface_project/configs/experiments.yaml) chứa đủ 5 thực nghiệm có đối chứng (E1: baseline_mlp, E2: mlp_adam, E3: exp_cnn_small, E4: exp_lr_01, E5: exp_batch_256).
+    - Xây dựng [src/fashionmnist/config.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/config.py) hỗ trợ deep merge, tự động resolve đường dẫn tuyệt đối dựa trên `PROJECT_ROOT`, và xác thực ràng buộc 10 lớp.
+    - Xây dựng [src/fashionmnist/utils/reproducibility.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/utils/reproducibility.py) quản lý `set_seed()`, tự động chọn thiết bị `get_device()` (CUDA -> MPS -> CPU), và xuất thông tin môi trường.
+    - Xây dựng [tests/test_config.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/tests/test_config.py) và chạy thành công 5/5 unit test (100% PASS).
+    - Trạng thái Module M1: `✅ Done`. Sẵn sàng cho Module M2.
