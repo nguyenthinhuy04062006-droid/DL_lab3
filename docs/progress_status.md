@@ -31,7 +31,7 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
 | **M2** | **Data Pipeline** | Tải FashionMNIST, transforms không rò rỉ dữ liệu, stratified split 80/20, DataLoader | ✅ Done | `src/fashionmnist/data/`, `tests/test_dataset.py` |
 | **M3** | **Models Architecture** | Hiện thực `BaselineMLP` (~203k params) và `SimpleCNN` (~38k params) | ✅ Done | `src/fashionmnist/models/`, `tests/test_model.py` |
 | **M4** | **Train Engine** | Vòng lặp `train()` và `eval()`, loss, optimizer, scheduler, early stopping | ✅ Done | `src/fashionmnist/training/`, `tests/test_training.py` |
-| **M5** | **Checkpoint Management** | Cơ chế lưu và nạp an toàn (`weights_only=True`, `map_location`) | 📋 Todo | `src/fashionmnist/training/checkpoint.py`, `test_checkpoint.py` |
+| **M5** | **Checkpoint Management** | Cơ chế lưu và nạp an toàn (`weights_only=True`, `map_location`) | ✅ Done | `src/fashionmnist/training/checkpoint.py`, `tests/test_checkpoint.py` |
 | **M6** | **Sanity Checks** | Overfit trên 1 micro-batch (16 mẫu), kiểm tra gradient flow | 📋 Todo | Script kiểm tra tính toàn vẹn |
 | **M7** | **Controlled Experiments** | Thực thi 5 thực nghiệm đối chứng có kiểm soát (E1 $\to$ E5) | 📋 Todo | `artifacts/experiments/*.json` |
 | **M8** | **Final Evaluation** | Đánh giá mô hình tốt nhất trên Test set duy nhất (10.000 mẫu) | 📋 Todo | `artifacts/metrics/final_test.json`, `classification_report.csv` |
@@ -102,4 +102,10 @@ Một module chỉ được đánh dấu **Done [X]** khi và chỉ khi thỏa m
     - Xây dựng [src/fashionmnist/training/__init__.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/src/fashionmnist/training/__init__.py) xuất khẩu đầy đủ giao diện huấn luyện.
     - Xây dựng [tests/test_training.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/tests/test_training.py) gồm 9 unit tests bao quát toàn bộ optimizer, scheduler, forward/backward weight update, eval invariance, checkpoint roundtrip (weights_only=True) và train loop.
     - Kiểm thử tự động đạt 9/9 unit tests PASS (tổng dự án đạt 26/26 tests PASS) và vượt qua 5/5 bài kiểm tra `scripts/check_rules.py`.
-    - Trạng thái Module M4: `✅ Done`. Sẵn sàng cho Module M5/M6.
+    - Trạng thái Module M4: `✅ Done`.
+  - **Hoàn thành Module M5 — Checkpoint Management:**
+    - Hiện thực hóa đầy đủ quy trình lưu trữ và nạp checkpoint có cấu trúc bao gồm `model_state_dict`, `optimizer_state_dict`, `scheduler_state_dict`, siêu dữ liệu epoch, metric tốt nhất và snapshot cấu hình thực nghiệm.
+    - Đảm bảo an toàn tuyệt đối với cờ `weights_only=True` và `map_location` linh hoạt giữa CPU/GPU.
+    - Xây dựng bộ kiểm thử độc lập [tests/test_checkpoint.py](file:///c:/Users/user/Downloads/practice3_huggingface_project/tests/test_checkpoint.py) kiểm thử cấu trúc lưu, khôi phục trọng số, đặt tên file best model và bẫy ngoại lệ `FileNotFoundError` (4/4 tests PASS, tổng dự án đạt 30/30 tests PASS).
+    - Vượt qua 5/5 tiêu chuẩn của `scripts/check_rules.py`.
+    - Trạng thái Module M5: `✅ Done`. Sẵn sàng cho Module M6.
