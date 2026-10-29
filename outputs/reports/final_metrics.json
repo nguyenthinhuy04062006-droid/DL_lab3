@@ -1,0 +1,86 @@
+{
+  "dataset": "imdb",
+  "base_model": "distilbert/distilbert-base-uncased",
+  "seed": 42,
+  "epochs": 2,
+  "batch_size": 16,
+  "learning_rate": 2e-05,
+  "max_length": 128,
+  "train_samples": 800,
+  "validation_samples": 200,
+  "test_samples": 200,
+  "train_runtime_seconds": 267.88389110565186,
+  "baseline_metrics": {
+    "accuracy": 0.425,
+    "f1": 0.42464040025015637
+  },
+  "test_metrics": {
+    "test_loss": 0.5033303499221802,
+    "test_model_preparation_time": 0.0009,
+    "test_accuracy": 0.76,
+    "test_f1": 0.7575757575757576,
+    "test_precision": 0.7635467980295567,
+    "test_recall": 0.7572115384615384,
+    "test_runtime": 8.0764,
+    "test_samples_per_second": 24.764,
+    "test_steps_per_second": 1.61
+  },
+  "gain": {
+    "accuracy_gain_vs_untrained_val": 0.43,
+    "accuracy_gain_vs_majority": 0.24,
+    "accuracy_gain_vs_untrained_test": 0.335,
+    "f1_gain_vs_untrained_val": 0.43,
+    "f1_gain_vs_untrained_test": 0.3329353573256012
+  },
+  "confusion_matrix": [
+    [
+      86,
+      18
+    ],
+    [
+      30,
+      66
+    ]
+  ],
+  "classification_report": {
+    "NEGATIVE": {
+      "precision": 0.7413793103448276,
+      "recall": 0.8269230769230769,
+      "f1-score": 0.7818181818181819,
+      "support": 104.0
+    },
+    "POSITIVE": {
+      "precision": 0.7857142857142857,
+      "recall": 0.6875,
+      "f1-score": 0.7333333333333333,
+      "support": 96.0
+    },
+    "accuracy": 0.76,
+    "macro avg": {
+      "precision": 0.7635467980295567,
+      "recall": 0.7572115384615384,
+      "f1-score": 0.7575757575757576,
+      "support": 200.0
+    },
+    "weighted avg": {
+      "precision": 0.7626600985221675,
+      "recall": 0.76,
+      "f1-score": 0.7585454545454544,
+      "support": 200.0
+    }
+  },
+  "majority_class_baseline": 0.52,
+  "truncation_rate_test": 0.86,
+  "baseline_val_metrics": {
+    "accuracy": 0.33,
+    "f1": 0.3275792854275391,
+    "loss": 0.698865532875061
+  },
+  "wilson_score_interval_95": {
+    "lower": 0.6963,
+    "upper": 0.8139,
+    "confidence_level": 0.95,
+    "sample_size": 200,
+    "correct_predictions": 152
+  }
+}

@@ -1,0 +1,11 @@
+step,text,label,confidence,latency_ms
+1,"Package arrived 2 days earlier than scheduled, excellent service!",POSITIVE,61.04037165641785,16.229500000008557
+2,Delivery driver was polite and called ahead before arriving.,POSITIVE,54.00983691215515,11.102000000391854
+3,"The box was crushed and water damaged upon arrival, completely unacceptable.",NEGATIVE,61.79879307746887,9.65509999969072
+4,Driver dropped off the package at the wrong building entrance.,NEGATIVE,65.51769375801086,11.655100000098173
+5,Items were packed with great care and plenty of bubble wrap.,POSITIVE,65.31113982200623,13.06220000014946
+6,"Tracking status hasn't updated for four straight days, where is my order?",NEGATIVE,67.82733798027039,13.603400000192778
+7,"Quick, courteous, and hassle-free return pickup at my doorstep.",POSITIVE,60.88654398918152,10.434999999688443
+8,Customer service rep was rude and hung up on me when I asked for a refund.,NEGATIVE,71.6669499874115,12.127499999678548
+9,"Great communication throughout the entire shipping process, highly recommend!",POSITIVE,64.53967094421387,8.945700000367651
+10,"Late delivery again for the third time this month, taking my business elsewhere.",POSITIVE,52.47185230255127,10.48129999981029

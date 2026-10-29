@@ -6,7 +6,7 @@ __pycache__/
 huggingface_cache/
 
 # FashionMNIST artifacts & data
-data/FashionMNIST/
+data/
 artifacts/checkpoints/*.pt
 artifacts/predictions/*
 *.pt
@@ -19,4 +19,8 @@ outputs/logs/
 outputs/*.png
 outputs/*.csv
 outputs/*.json
+
+# Archive / Backups
+archive/
+
 
