@@ -28,8 +28,6 @@ AI được sử dụng trong các phạm vi cụ thể:
    - Xây dựng quy trình 7 bước chuẩn: nạp dataset `imdb`, tiền xử lý với `DataCollatorWithPadding`, cấu hình `TrainingArguments`, huấn luyện với `Trainer`, và tính toán bộ chỉ số đa chiều (Accuracy, Precision, Recall, F1, Confusion Matrix).
 3. **Phân tích lỗi (Error Analysis):**
    - Viết code lọc và trích xuất các câu review phim bị dự đoán sai có độ tự tin cao nhất vào file `outputs/reports/error_analysis.csv`.
-4. **Mở rộng Smart Logistics:**
-   - Viết module mô phỏng luồng phản hồi khách hàng theo thời gian thực và đo độ trễ suy luận.
 
 ---
 
