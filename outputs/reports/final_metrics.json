@@ -1,15 +1,15 @@
 {
-    "test_accuracy": 72.0,
-    "test_macro_f1": 71.81964573268921,
-    "test_precision": 72.07792207792207,
-    "test_recall": 71.7948717948718,
-    "test_loss": 0.5620665550231934,
-    "correct_predictions": 144,
+    "test_accuracy": 74.5,
+    "test_macro_f1": 74.2677665935064,
+    "test_precision": 74.75703324808184,
+    "test_recall": 74.23878205128204,
+    "test_loss": 0.5565013885498047,
+    "correct_predictions": 149,
     "total_samples": 200,
     "wilson_95_ci": [
-        65.407568582229,
-        77.76320715736487
+        68.03694869280503,
+        80.03959701719725
     ],
     "majority_baseline": 52.0,
-    "untrained_head_baseline": 42.5
+    "untrained_head_val_baseline": 44.0
 }

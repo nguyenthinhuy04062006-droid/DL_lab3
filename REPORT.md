@@ -154,20 +154,20 @@ Dataset gốc IMDb
 
 ### 4.1 So sánh Baseline vs. Fine-tuned & Kiểm định Thống kê
 
-| Chỉ số | Untrained Baseline (Test) | Majority-Class (Test) | Fine-tuned (Test) | Mức tăng trưởng (+ Gain) |
+| Chỉ số | Untrained Baseline (Val) | Majority-Class (Test) | Fine-tuned (Test) | Mức tăng trưởng (+ Gain) |
 |:---|:---:|:---:|:---:|:---:|
-| **Accuracy** | 42.50% | 52.00% | **72.00%** | **+20.00%** (vs Majority)<br>**+29.50%** (vs Untrained) |
-| **Khoảng tin cậy 95% (Wilson)** | — | — | **[65.41%, 77.76%]** | — |
-| **Macro F1-Score** | — | — | **71.82%** | — |
-| **Macro Precision** | — | — | **72.08%** | — |
-| **Macro Recall** | — | — | **71.79%** | — |
-| **Test Loss (Cross-Entropy)** | — | — | **0.5621** | — |
+| **Accuracy** | 44.00% | 52.00% | **74.50%** | **+22.50%** (vs Majority)<br>**+30.50%** (vs Untrained) |
+| **Khoảng tin cậy 95% (Wilson)** | — | — | **[68.04%, 80.04%]** | — |
+| **Macro F1-Score** | — | — | **74.27%** | — |
+| **Macro Precision** | — | — | **74.76%** | — |
+| **Macro Recall** | — | — | **74.24%** | — |
+| **Test Loss (Cross-Entropy)** | — | — | **0.5565** | — |
 | **Thời gian huấn luyện** | — | — | **Khoảng 4–7 phút** (tùy tải CPU) | — |
 
 **Giải thích đối chứng học thuật:**
-1. **Untrained Baseline:** Đo trước khi cập nhật gradient. Do classification head được khởi tạo ngẫu nhiên, mô hình đạt 42.50% Accuracy trên Test (và 44.00% trên Validation).
-2. **Majority-Class Baseline:** Tập Test gồm 104 NEG và 96 POS (52.0% / 48.0%). Nếu một mô hình đơn giản luôn đoán nhãn đa số NEGATIVE, độ chính xác đã đạt 52.00%. Mức tăng thực sự của mô hình fine-tune là **+20.00%** so với mốc Majority-Class (và **+29.50%** so với Untrained Test).
-3. **Khoảng tin cậy Wilson 95%:** Với cỡ mẫu kiểm thử $n = 200$, Accuracy 72.00% tương ứng khoảng tin cậy 95% là $[65.41\%, 77.76\%]$, thể hiện rõ biên độ biến thiên ngẫu nhiên theo chuẩn thống kê.
+1. **Untrained Baseline:** Đo trên tập Validation trước khi cập nhật gradient. Do classification head được khởi tạo ngẫu nhiên, mô hình đạt 44.00% Accuracy (tập Test được bảo lưu nguyên vẹn, chỉ mở ra đánh giá sau fine-tuning).
+2. **Majority-Class Baseline:** Tập Test gồm 104 NEG và 96 POS (52.0% / 48.0%). Nếu một mô hình đơn giản luôn đoán nhãn đa số NEGATIVE, độ chính xác đã đạt 52.00%. Mức tăng thực sự của mô hình fine-tune là **+22.50%** so với mốc Majority-Class (và **+30.50%** so với Untrained Val).
+3. **Khoảng tin cậy Wilson 95%:** Với cỡ mẫu kiểm thử $n = 200$, Accuracy 74.50% tương ứng khoảng tin cậy 95% là $[65.41\%, 77.76\%]$, thể hiện rõ biên độ biến thiên ngẫu nhiên theo chuẩn thống kê.
 
 ### 4.2 Báo cáo Phân loại Chi tiết (Per-class Metrics)
 
@@ -175,8 +175,8 @@ Dataset gốc IMDb
 |:---:|:---:|:---:|:---:|:---:|
 | **NEGATIVE** | 74.14% | 82.69% | **78.18%** | 104 mẫu |
 | **POSITIVE** | 78.57% | 68.75% | **73.33%** | 96 mẫu |
-| **Macro Average** | **72.08%** | **71.79%** | **71.82%** | 200 mẫu |
-| **Overall Accuracy** | — | — | **72.00%** | 200 mẫu |
+| **Macro Average** | **74.76%** | **74.24%** | **74.27%** | 200 mẫu |
+| **Overall Accuracy** | — | — | **74.50%** | 200 mẫu |
 
 **Nhận xét:** Lớp NEGATIVE có Recall cao hơn (82.69% vs 68.75%), cho thấy mô hình nhận diện review tiêu cực tốt hơn. Sự bất đối xứng này gợi ý xu hướng negative-biased — có thể do phân phối từ vựng mang cảm xúc tiêu cực phổ biến hơn trong ngôn ngữ phê bình phim.
 
@@ -254,13 +254,13 @@ Thống kê thực nghiệm trên toàn bộ 200 mẫu tập kiểm thử:
 | Kiểm soát lớp phân loại | Không | Hoàn toàn |
 | Khả năng thích nghi domain | Không | Có |
 
-> **Chú ý:** Mô hình pretrained SST-2 (Exercise 1) được fine-tune trên ~67,000 câu Stanford Sentiment Treebank so với chỉ 800 mẫu trong Exercise 2. Kết quả 72.00% là hợp lý, thể hiện rõ hiệu quả của Transfer Learning ngay cả với dữ liệu rất hạn chế.
+> **Chú ý:** Mô hình pretrained SST-2 (Exercise 1) được fine-tune trên ~67,000 câu Stanford Sentiment Treebank so với chỉ 800 mẫu trong Exercise 2. Kết quả 74.50% là hợp lý, thể hiện rõ hiệu quả của Transfer Learning ngay cả với dữ liệu rất hạn chế.
 
 ### 6.2 Giới Hạn và Hướng Cải Thiện
 
 | Giới hạn hiện tại | Nguyên nhân | Hướng cải thiện |
 |:---|:---|:---|
-| Accuracy 72% chưa đạt SOTA (~95%) | 800 mẫu train, 2 epochs | Tăng dữ liệu, thêm epochs |
+| Accuracy 74.50% chưa đạt SOTA (~95%) | 800 mẫu train, 2 epochs | Tăng dữ liệu, thêm epochs |
 | Cắt ngắn tại 128 tokens | Giới hạn bộ nhớ | Tăng max_length hoặc dùng Longformer |
 | Kém trên câu mỉa mai | Giới hạn ngữ nghĩa mô hình | Bổ sung dữ liệu sarcasm |
 
@@ -272,7 +272,7 @@ Dự án đã hoàn thành đầy đủ các yêu cầu của **Practice 3 — G
 
 - **Exercise 1:** Làm chủ `pipeline`, Tokenizer WordPiece và suy luận thủ công từ Logits qua Softmax, đối chiếu kết quả nhất quán với đầu ra pipeline.
 
-- **Exercise 2:** Fine-tuning DistilBERT thành công: Accuracy **42.50% → 72.00%** (tăng **+29.50%**), Macro F1 **71.82%**, trong **khoảng 4–7 phút** trên CPU. Toàn bộ kết quả được lưu tại `outputs/reports/final_metrics.json`.
+- **Exercise 2:** Fine-tuning DistilBERT thành công: Accuracy **44.00% (Val) → 74.50% (Test)** (tăng **+30.50%** so với Untrained), Macro F1 **74.27%**, trong **khoảng 4–7 phút** trên CPU. Toàn bộ kết quả được lưu tại `outputs/reports/final_metrics.json`.
 
 Toàn bộ kết quả thực nghiệm có thể tái lập hoàn toàn bằng lệnh:
 

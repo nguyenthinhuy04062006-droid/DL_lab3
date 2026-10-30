@@ -9,7 +9,7 @@ Dự án thực hành chuyên sâu về Xử lý Ngôn ngữ Tự nhiên (NLP) h
 - **Làm chủ quy trình xử lý nội tại của Transformer:** Hiểu sâu về Tokenizer (WordPiece sub-words, token IDs, attention mask, dynamic padding) và cơ chế suy luận từ Logits thô qua Softmax.
 - **Phân biệt rành mạch Inference và Fine-tuning:** Nắm rõ khi nào chỉ cần dùng checkpoint có sẵn và khi nào bắt buộc phải tinh chỉnh trọng số mạng.
 - **Quy trình 7 bước Fine-tuning chuẩn mực:** Tải dữ liệu công khai, chia tập tránh rò rỉ dữ liệu (`train_test_split`), thiết lập siêu tham số (`TrainingArguments`), sử dụng `Trainer`, và tính toán bộ chỉ số đa chiều (Accuracy, Precision, Recall, Macro-F1).
-- **Đánh giá có đối chứng khoa học:** Đánh giá Baseline trước huấn luyện (~42.5% do classification head ngẫu nhiên) so sánh với kết quả sau huấn luyện (72.00%).
+- **Đánh giá có đối chứng khoa học:** Đánh giá Baseline trước huấn luyện trên tập Validation (44.00% do classification head ngẫu nhiên) so sánh với kết quả kiểm thử sau huấn luyện (74.50%).
 - **Phân tích lỗi (Error Analysis):** Truy vết các mẫu dự đoán sai mà mô hình tự tin nhất để hiểu rõ giới hạn ngữ nghĩa.
 
 ---
@@ -85,19 +85,19 @@ python src/03_predict_finetuned.py --text "The cinematography was breathtaking a
 
 ### 5.1 So sánh Đối chứng Khoa học (Baseline vs. Fine-tuned)
 
-| Chỉ số đánh giá | Untrained Baseline (Test) | Majority-Class (Test) | Fine-tuned DistilBERT (Test) | Mức tăng trưởng (+ Gain) |
+| Chỉ số đánh giá | Untrained Baseline (Val) | Majority-Class (Test) | Fine-tuned DistilBERT (Test) | Mức tăng trưởng (+ Gain) |
 |---|:---:|:---:|:---:|:---:|
-| **Accuracy** | **42.50%** | **52.00%** | **72.00%** | **+20.00%** (vs Majority)<br>**+29.50%** (vs Untrained) |
-| **Khoảng tin cậy 95% (Wilson)** | — | — | **[65.41%, 77.76%]** | — |
-| **Macro F1-Score** | — | — | **71.82%** | — |
-| **Macro Precision** | — | — | **72.08%** | — |
-| **Macro Recall** | — | — | **71.79%** | — |
-| **Test Loss** | — | — | **0.5621** | — |
+| **Accuracy** | **44.00%** | **52.00%** | **74.50%** | **+22.50%** (vs Majority)<br>**+30.50%** (vs Untrained) |
+| **Khoảng tin cậy 95% (Wilson)** | — | — | **[68.04%, 80.04%]** | — |
+| **Macro F1-Score** | — | — | **74.27%** | — |
+| **Macro Precision** | — | — | **74.76%** | — |
+| **Macro Recall** | — | — | **74.24%** | — |
+| **Test Loss** | — | — | **0.5565** | — |
 | **Thời gian huấn luyện** | — | — | **~4.5 phút** | — |
 
 > **Nhận xét khoa học:**
-> 1. Trước khi huấn luyện, lớp phân loại (classification head) được khởi tạo ngẫu nhiên nên mô hình chỉ đạt 42.50% trên tập Test.
-> 2. Mốc **Majority-Class Baseline** trên tập Test (104 NEG / 96 POS) đạt 52.00% (nếu luôn đoán NEGATIVE). Mô hình fine-tuned đạt **72.00%**, thực sự tăng trưởng **+20.00%** so với mốc Majority-Class.
+> 1. Trước khi huấn luyện, lớp phân loại (classification head) được khởi tạo ngẫu nhiên nên mô hình chỉ đạt 44.00% trên tập Validation (tập Test được bảo lưu nghiêm ngặt, chỉ đánh giá sau fine-tuning).
+> 2. Mốc **Majority-Class Baseline** trên tập Test (104 NEG / 96 POS) đạt 52.00% (nếu luôn đoán NEGATIVE). Mô hình fine-tuned đạt **74.50%**, thực sự tăng trưởng **+22.50%** so với mốc Majority-Class.
 > 3. Với cỡ mẫu kiểm thử 200, **Khoảng tin cậy Wilson 95%** là $[65.41\%, 77.76\%]$, thể hiện rõ ràng biên độ ngẫu nhiên của mẫu theo chuẩn thống kê.
 
 ### 5.2 Ma trận nhầm lẫn (Confusion Matrix trên 200 mẫu Test)
