@@ -5,7 +5,6 @@ __pycache__/
 .cache/
 huggingface_cache/
 
-# FashionMNIST artifacts & data
 data/
 artifacts/checkpoints/*.pt
 artifacts/predictions/*
