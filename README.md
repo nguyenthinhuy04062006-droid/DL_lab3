@@ -98,7 +98,7 @@ python src/03_predict_finetuned.py --text "The cinematography was breathtaking a
 > **Nhận xét khoa học:**
 > 1. Trước khi huấn luyện, lớp phân loại (classification head) được khởi tạo ngẫu nhiên nên mô hình chỉ đạt 44.00% trên tập Validation (tập Test được bảo lưu nghiêm ngặt, chỉ đánh giá sau fine-tuning).
 > 2. Mốc **Majority-Class Baseline** trên tập Test (104 NEG / 96 POS) đạt 52.00% (nếu luôn đoán NEGATIVE). Mô hình fine-tuned đạt **74.50%**, thực sự tăng trưởng **+22.50%** so với mốc Majority-Class.
-> 3. Với cỡ mẫu kiểm thử 200, **Khoảng tin cậy Wilson 95%** là $[65.41\%, 77.76\%]$, thể hiện rõ ràng biên độ ngẫu nhiên của mẫu theo chuẩn thống kê.
+> 3. Với cỡ mẫu kiểm thử 200, **Khoảng tin cậy Wilson 95%** là $[68.04\%, 80.04\%]$, thể hiện rõ ràng biên độ ngẫu nhiên của mẫu theo chuẩn thống kê.
 
 ### 5.2 Ma trận nhầm lẫn (Confusion Matrix trên 200 mẫu Test)
 

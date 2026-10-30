@@ -167,7 +167,7 @@ Dataset gốc IMDb
 **Giải thích đối chứng học thuật:**
 1. **Untrained Baseline:** Đo trên tập Validation trước khi cập nhật gradient. Do classification head được khởi tạo ngẫu nhiên, mô hình đạt 44.00% Accuracy (tập Test được bảo lưu nguyên vẹn, chỉ mở ra đánh giá sau fine-tuning).
 2. **Majority-Class Baseline:** Tập Test gồm 104 NEG và 96 POS (52.0% / 48.0%). Nếu một mô hình đơn giản luôn đoán nhãn đa số NEGATIVE, độ chính xác đã đạt 52.00%. Mức tăng thực sự của mô hình fine-tune là **+22.50%** so với mốc Majority-Class (và **+30.50%** so với Untrained Val).
-3. **Khoảng tin cậy Wilson 95%:** Với cỡ mẫu kiểm thử $n = 200$, Accuracy 74.50% tương ứng khoảng tin cậy 95% là $[65.41\%, 77.76\%]$, thể hiện rõ biên độ biến thiên ngẫu nhiên theo chuẩn thống kê.
+3. **Khoảng tin cậy Wilson 95%:** Với cỡ mẫu kiểm thử $n = 200$, Accuracy 74.50% tương ứng khoảng tin cậy 95% là $[68.04\%, 80.04\%]$, thể hiện rõ biên độ biến thiên ngẫu nhiên theo chuẩn thống kê.
 
 ### 4.2 Báo cáo Phân loại Chi tiết (Per-class Metrics)
 
