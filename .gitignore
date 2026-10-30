@@ -23,8 +23,3 @@ outputs/*.json
 
 # Archive / Backups
 archive/
-
-
-
-notebooks/Practice3_HuggingFace.ipynb
-notebooks/Practice3_HuggingFace_Final_Checked.ipynb
