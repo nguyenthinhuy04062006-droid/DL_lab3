@@ -16,13 +16,6 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-# Khắc phục tương thích lỗi 404 additional_chat_templates trên Hugging Face Hub
-try:
-    import transformers.tokenization_utils_base
-    transformers.tokenization_utils_base.list_repo_templates = lambda *a, **k: []
-except Exception:
-    pass
-
 import torch
 import torch.nn.functional as F
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline

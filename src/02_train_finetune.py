@@ -26,13 +26,6 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-# Khắc phục tương thích lỗi 404 additional_chat_templates trên Hugging Face Hub
-try:
-    import transformers.tokenization_utils_base
-    transformers.tokenization_utils_base.list_repo_templates = lambda *a, **k: []
-except Exception:
-    pass
-
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -206,13 +199,22 @@ def main() -> None:
         compute_metrics=compute_metrics,
     )
 
-    # Đánh giá Baseline trên tập Validation (chuẩn học thuật: không chạm Test Set trước khi train)
-    print("   👉 Đánh giá Baseline (trên tập Validation trước huấn luyện)...")
-    baseline_val_metrics = trainer.evaluate(eval_dataset=tokenized_val)
-    base_val_acc = baseline_val_metrics.get("eval_accuracy", 0.0)
-    base_val_f1 = baseline_val_metrics.get("eval_f1", 0.0)
+    # Đánh giá Baseline thực sự trên cả Validation và Test trước huấn luyện (Untrained Head)
+    print("   👉 Đánh giá Baseline Untrained Head trên Validation Set...")
+    untrained_val_metrics = trainer.evaluate(eval_dataset=tokenized_val, metric_key_prefix="untrained_val")
+    base_val_acc = untrained_val_metrics.get("untrained_val_accuracy", 0.0)
+    base_val_f1 = untrained_val_metrics.get("untrained_val_f1", 0.0)
+    base_val_loss = untrained_val_metrics.get("untrained_val_loss", 0.0)
     print(f"      Baseline Validation Accuracy: {base_val_acc * 100:.2f}%")
-    print(f"      Baseline Validation Macro-F1: {base_val_f1 * 100:.2f}%\n")
+    print(f"      Baseline Validation Macro-F1: {base_val_f1 * 100:.2f}%")
+
+    print("   👉 Đánh giá Baseline Untrained Head trên Test Set...")
+    untrained_test_metrics = trainer.evaluate(eval_dataset=tokenized_test, metric_key_prefix="untrained_test")
+    base_test_acc = untrained_test_metrics.get("untrained_test_accuracy", 0.0)
+    base_test_f1 = untrained_test_metrics.get("untrained_test_f1", 0.0)
+    base_test_loss = untrained_test_metrics.get("untrained_test_loss", 0.0)
+    print(f"      Baseline Test Accuracy:       {base_test_acc * 100:.2f}%")
+    print(f"      Baseline Test Macro-F1:       {base_test_f1 * 100:.2f}%\n")
 
     # Tiến hành Fine-tuning
     print("   👉 Bắt đầu huấn luyện...")
@@ -286,7 +288,7 @@ def main() -> None:
     df_errors = pd.DataFrame(error_records).sort_values("confidence", ascending=False)
     df_errors.to_csv(REPORTS_DIR / "error_analysis.csv", index=False)
 
-    # Lưu file JSON metrics tổng hợp chuẩn xác học thuật
+    # Lưu file JSON metrics tổng hợp chuẩn xác học thuật (tính toán động 100%, không hardcode)
     final_metrics_payload = {
         "dataset": "imdb",
         "base_model": model_name,
@@ -303,10 +305,12 @@ def main() -> None:
         "baseline_val_metrics": {
             "accuracy": base_val_acc,
             "f1": base_val_f1,
+            "loss": base_val_loss,
         },
         "baseline_metrics": {
-            "accuracy": 0.425,
-            "f1": 0.42464040025015637,
+            "accuracy": base_test_acc,
+            "f1": base_test_f1,
+            "loss": base_test_loss,
         },
         "test_metrics": {
             "test_accuracy": test_metrics.get("eval_accuracy", 0.0),
@@ -322,7 +326,9 @@ def main() -> None:
         "gain": {
             "accuracy_gain_vs_untrained_val": test_metrics.get("eval_accuracy", 0.0) - base_val_acc,
             "accuracy_gain_vs_majority": test_metrics.get("eval_accuracy", 0.0) - majority_baseline,
-            "accuracy_gain_vs_untrained_test": test_metrics.get("eval_accuracy", 0.0) - 0.425,
+            "accuracy_gain_vs_untrained_test": test_metrics.get("eval_accuracy", 0.0) - base_test_acc,
+            "f1_gain_vs_untrained_val": test_metrics.get("eval_f1", 0.0) - base_val_f1,
+            "f1_gain_vs_untrained_test": test_metrics.get("eval_f1", 0.0) - base_test_f1,
         },
         "confusion_matrix": cm.tolist(),
         "classification_report": clf_report,
