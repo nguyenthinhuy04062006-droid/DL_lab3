@@ -5,7 +5,7 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-# Tự động chuyển sang Python hệ thống (Python 3.13) nếu môi trường hiện tại thiếu nbformat / nbclient
+# Tự động chuyển tiếp sang Python hệ thống (Python 3.13) nếu môi trường hiện tại thiếu nbformat / nbclient
 try:
     import nbformat
     from nbclient import NotebookClient
@@ -15,11 +15,9 @@ except ImportError:
         "python",
         "py -3.13",
     ]
-    # Tránh loop đệ quy
     if os.environ.get("_RUN_NB_FALLBACK") != "1":
         for py_cmd in fallback_pythons:
             try:
-                # Kiểm tra xem python này có nbclient không
                 check = subprocess.run([py_cmd, "-c", "import nbclient, nbformat"], capture_output=True, text=True)
                 if check.returncode == 0:
                     print(f"[INFO] Môi trường hiện tại thiếu thư viện. Đang tự động chuyển tiếp sang: {py_cmd}\n", flush=True)
@@ -35,7 +33,6 @@ except ImportError:
 
 nb_path = Path("lab3_DL/notebooks/Practice3_HuggingFace_Final.ipynb")
 if not nb_path.exists():
-    # Thử tìm tương đối nếu đang đứng trong thư mục lab3_DL
     if Path("notebooks/Practice3_HuggingFace_Final.ipynb").exists():
         nb_path = Path("notebooks/Practice3_HuggingFace_Final.ipynb")
 
@@ -53,9 +50,10 @@ class ProgressClient(NotebookClient):
         if cell.cell_type == "code":
             print(f"[{time.strftime('%H:%M:%S')}] -> Cell {cell_index:02d} completed (execution_count={cell.execution_count})", flush=True)
 
+# Đặt timeout=None để không bao giờ bị ngắt quãng giữa chừng khi huấn luyện mô hình sâu
 client = ProgressClient(
     nb,
-    timeout=900,  # 15 mins
+    timeout=None,  # Không giới hạn thời gian chạy từng cell
     kernel_name="python3",
     allow_errors=False
 )
@@ -68,7 +66,7 @@ try:
     elapsed = time.time() - start_time
     print(f"\n[{time.strftime('%H:%M:%S')}] [SUCCESS] Notebook executed completely in {elapsed:.2f}s (~{elapsed/60:.2f} mins)!", flush=True)
     
-    # Save back to both locations
+    # Lưu lại khi và chỉ khi toàn bộ notebook chạy thành công hoàn tất
     with open(nb_path, "w", encoding="utf-8") as f:
         nbformat.write(nb, f)
     downloads_path = Path("c:/Users/user/Downloads/Practice3_HuggingFace_Final.ipynb")
@@ -81,6 +79,5 @@ try:
 except Exception as e:
     elapsed = time.time() - start_time
     print(f"\n[{time.strftime('%H:%M:%S')}] [ERROR] Failed after {elapsed:.2f}s: {e}", flush=True)
-    with open(nb_path, "w", encoding="utf-8") as f:
-        nbformat.write(nb, f)
+    print("[INFO] Giữ nguyên bản notebook hiện tại, không ghi đè khi xảy ra lỗi gián đoạn.", flush=True)
     sys.exit(1)
