@@ -1,0 +1,15 @@
+{
+    "test_accuracy": 74.5,
+    "test_macro_f1": 74.2677665935064,
+    "test_precision": 74.75703324808184,
+    "test_recall": 74.23878205128204,
+    "test_loss": 0.5565013885498047,
+    "correct_predictions": 149,
+    "total_samples": 200,
+    "wilson_95_ci": [
+        68.03694869280503,
+        80.03959701719725
+    ],
+    "majority_baseline": 52.0,
+    "untrained_head_val_baseline": 44.0
+}

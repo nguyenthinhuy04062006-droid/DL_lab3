@@ -1,0 +1,24 @@
+# Python & Virtual Environments
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.cache/
+huggingface_cache/
+.pytest_cache/
+
+# Large Model Weights & Checkpoints (Avoid GitHub 100MB limit)
+outputs/checkpoints/
+outputs/final_model/
+outputs/logs/
+*.safetensors
+*.pt
+*.bin
+
+# Temporary Build / Helper Scripts
+build_clean_notebook.py
+build_final_notebook.py
+run_nb.py
+archive/
