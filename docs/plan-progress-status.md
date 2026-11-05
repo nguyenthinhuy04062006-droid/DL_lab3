@@ -8,11 +8,11 @@
 
 | Hạng mục dự án | Trọng số | Trạng thái hiện tại | Đánh giá hoàn thành |
 |:---|:---:|:---:|:---:|
-| **Giai đoạn 1: Thiết lập & Suy luận Pretrained (Ex 1)** | 20% | **ĐÃ HOÀN THÀNH** | [OK] 100% — Chạy thành công, kiểm chứng Softmax |
-| **Giai đoạn 2: Chuẩn bị Dữ liệu & Thiết lập Baseline** | 20% | **ĐÃ HOÀN THÀNH** | [OK] 100% — Tách tập không rò rỉ, đo Baseline |
-| **Giai đoạn 3: Tinh chỉnh Mô hình DistilBERT (Ex 2)** | 25% | **ĐÃ HOÀN THÀNH** | [OK] 100% — Trainer 2 epochs, lưu safetensors |
-| **Giai đoạn 4: Đánh giá Khoa học & Phân tích Lỗi** | 20% | **ĐÃ HOÀN THÀNH** | [OK] 100% — Wilson CI 95%, Heatmap, Error CSV |
-| **Giai đoạn 5: Lập Tài liệu Học Thuật & Đóng Gói** | 15% | **ĐÃ HOÀN THÀNH** | [OK] 100% — Chuẩn hóa `/docs` & Notebook |
+| **Giai đoạn 1: Thiết lập & Suy luận Pretrained (Ex 1)** | 20% | **ĐÃ HOÀN THÀNH** | ✅ 100% — Chạy thành công, kiểm chứng Softmax |
+| **Giai đoạn 2: Chuẩn bị Dữ liệu & Thiết lập Baseline** | 20% | **ĐÃ HOÀN THÀNH** | ✅ 100% — Tách tập không rò rỉ, đo Baseline |
+| **Giai đoạn 3: Tinh chỉnh Mô hình DistilBERT (Ex 2)** | 25% | **ĐÃ HOÀN THÀNH** | ✅ 100% — Trainer 2 epochs, lưu safetensors |
+| **Giai đoạn 4: Đánh giá Khoa học & Phân tích Lỗi** | 20% | **ĐÃ HOÀN THÀNH** | ✅ 100% — Wilson CI 95%, Heatmap, Error CSV |
+| **Giai đoạn 5: Lập Tài liệu Học Thuật & Đóng Gói** | 15% | **ĐÃ HOÀN THÀNH** | ✅ 100% — Chuẩn hóa `/docs` & Notebook |
 | **TỔNG THỂ TIẾN ĐỘ DỰ ÁN** | **100%** | **HOÀN THÀNH TOÀN DIỆN** | **100% (READY FOR SUBMISSION)** |
 
 ```mermaid
@@ -66,7 +66,7 @@ gantt
 ### Giai đoạn 5: Đóng Gói Sản Phẩm & Tài Liệu Chuẩn Hóa
 - [x] Xây dựng công cụ CLI suy luận tương tác: `src/03_predict_finetuned.py`.
 - [x] Tích hợp toàn bộ nội dung vào một Jupyter Notebook duy nhất: `notebooks/Practice3_HuggingFace_Final.ipynb`.
-- [x] Chuẩn hóa thư mục `/docs` với các tệp tài liệu chuyên trách:
+- [x] Chuẩn hóa thư mục `/docs` với đúng 7 tệp tài liệu chuyên trách:
   - [labs3-description.md](labs3-description.md)
   - [data.md](data.md)
   - [model.md](model.md)
@@ -74,7 +74,6 @@ gantt
   - [evaluation.md](evaluation.md)
   - [demo.md](demo.md)
   - [plan-progress-status.md](plan-progress-status.md)
-  - [plan-progress-status.html](plan-progress-status.html)
 
 ---
 
@@ -84,17 +83,16 @@ gantt
 |:---:|:---|:---|:---|
 | 1 | Mã nguồn Bài 1 | `src/01_sentiment_analysis.py` | Pipeline & Softmax thủ công (Sẵn sàng) |
 | 2 | Mã nguồn Bài 2 | `src/02_train_finetune.py` | 7 bước Fine-tuning & Đánh giá (Sẵn sàng) |
-| 3 | Quản lý Checkpoint | `src/checkpoint_manager.py` | Giám sát & Quản lý Checkpoint theo Epoch (Sẵn sàng) |
-| 4 | Công cụ suy luận CLI | `src/03_predict_finetuned.py` | Dự đoán câu mới với thanh bar trực quan (Sẵn sàng) |
-| 5 | Jupyter Notebook | `notebooks/Practice3_HuggingFace_Final.ipynb` | Notebook hoàn chỉnh cả 2 bài tập (Sẵn sàng) |
-| 6 | Bản xuất HTML Notebook | `notebooks/Practice3_HuggingFace_Final.html` | Bản xuất HTML đầy đủ code, logs & toàn bộ biểu đồ (Sẵn sàng) |
-| 7 | Trọng số mô hình | `outputs/final_model/model.safetensors` | Model weights sau 2 epochs fine-tuning |
-| 8 | Nhật ký kết quả | `outputs/reports/final_metrics.json` | Dữ liệu đo đạc thực nghiệm gốc |
-| 9 | Báo cáo chi tiết | `outputs/reports/classification_report.csv` | Precision, Recall, F1 theo từng nhãn |
-| 10 | Ma trận nhầm lẫn | `outputs/reports/confusion_matrix.csv` | TN=86, FP=18, FN=30, TP=66 |
-| 11 | Phân tích sai số | `outputs/reports/error_analysis.csv` | Danh mục 48 ca dự đoán sai |
-| 12 | Đồ thị trực quan | `outputs/reports/*.png` | 5 biểu đồ phân tích thực nghiệm |
-| 13 | Hệ thống tài liệu | `docs/*.md, *.html` | Tài liệu chuyên sâu theo module & HTML Dashboard |
+| 3 | Công cụ suy luận CLI | `src/03_predict_finetuned.py` | Dự đoán câu mới với thanh bar trực quan (Sẵn sàng) |
+| 4 | Jupyter Notebook | `notebooks/Practice3_HuggingFace_Final.ipynb` | Notebook hoàn chỉnh cả 2 bài tập (Sẵn sàng) |
+| 5 | Trọng số mô hình | `outputs/final_model/model.safetensors` | Model weights sau 2 epochs fine-tuning |
+| 6 | Nhật ký kết quả | `outputs/reports/final_metrics.json` | Dữ liệu đo đạc thực nghiệm gốc |
+| 7 | Báo cáo chi tiết | `outputs/reports/classification_report.csv` | Precision, Recall, F1 theo từng nhãn |
+| 8 | Ma trận nhầm lẫn | `outputs/reports/confusion_matrix.csv` | TN=86, FP=18, FN=30, TP=66 |
+| 9 | Phân tích sai số | `outputs/reports/error_analysis.csv` | Danh mục 48 ca dự đoán sai |
+| 10 | Đồ thị trực quan | `outputs/reports/*.png` | 5 biểu đồ phân tích thực nghiệm |
+| 11 | Hệ thống tài liệu | `docs/*.md` (7 tệp) | Tài liệu chuyên sâu theo module |
+| 12 | Nhật ký kiểm toán | `AUDIT_LOG.md` | Kiểm toán 5 giai đoạn (Description -> Gen -> Smoke -> Run -> Check) |
 
 ---
 

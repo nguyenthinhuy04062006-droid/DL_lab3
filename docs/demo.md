@@ -87,10 +87,10 @@ python src/03_predict_finetuned.py --text "The cinematography was breathtaking a
 **Kết quả hiển thị trên Terminal:**
 ```text
 ============================================================
-KẾT QUẢ DỰ ĐOÁN CẢM XÚC (FINE-TUNED DISTILBERT)
+🎯 KẾT QUẢ DỰ ĐOÁN CẢM XÚC (FINE-TUNED DISTILBERT)
 ============================================================
-Câu đầu vào: "The cinematography was breathtaking and acting was superb!"
-Cảm xúc dự đoán: POSITIVE (Độ tự tin: 88.42%)
+💬 Câu đầu vào: "The cinematography was breathtaking and acting was superb!"
+🟢 Cảm xúc dự đoán: POSITIVE (Độ tự tin: 88.42%)
 
 Chi tiết xác suất từng nhãn:
   - NEGATIVE  :  11.58% | ███
@@ -105,10 +105,10 @@ python src/03_predict_finetuned.py --text "The plot was utterly boring, slow pac
 **Kết quả hiển thị trên Terminal:**
 ```text
 ============================================================
-KẾT QUẢ DỰ ĐOÁN CẢM XÚC (FINE-TUNED DISTILBERT)
+🎯 KẾT QUẢ DỰ ĐOÁN CẢM XÚC (FINE-TUNED DISTILBERT)
 ============================================================
-Câu đầu vào: "The plot was utterly boring, slow pacing and terrible acting."
-Cảm xúc dự đoán: NEGATIVE (Độ tự tin: 92.15%)
+💬 Câu đầu vào: "The plot was utterly boring, slow pacing and terrible acting."
+🔴 Cảm xúc dự đoán: NEGATIVE (Độ tự tin: 92.15%)
 
 Chi tiết xác suất từng nhãn:
   - NEGATIVE  :  92.15% | ███████████████████████████
@@ -130,18 +130,3 @@ jupyter notebook notebooks/Practice3_HuggingFace_Final.ipynb
 - Tích hợp liền mạch cả 2 bài tập (Exercise 1 & Exercise 2) trong cùng một tệp duy nhất.
 - Đầy đủ giải thích Markdown song ngữ kèm công thức toán học LaTeX.
 - Tự động hiển thị các biểu đồ trực quan hóa dữ liệu (EDA), đường cong học tập (Loss Curves), ma trận nhầm lẫn (Confusion Matrix) và bảng đối chứng khoa học.
-
----
-
-## 6. Demo 5: Giám Sát và Quản Lý Checkpoint theo Epoch (CLI Dashboard)
-
-Tra cứu nhanh trạng thái các checkpoints đã lưu qua từng epoch:
-
-```bash
-python src/checkpoint_manager.py
-```
-
-Chương trình sẽ hiển thị bảng điều khiển trực quan:
-- Liệt kê danh sách checkpoints theo từng Epoch và Global Step.
-- Chỉ số Validation Accuracy và Validation Loss tại mỗi epoch.
-- Kích thước lưu trữ trên đĩa (MB) và đánh dấu checkpoint tốt nhất (`[BEST]`).

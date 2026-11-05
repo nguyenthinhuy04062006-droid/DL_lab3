@@ -1,4 +1,4 @@
-# Practice 3 — Get Started with Hugging Face: Sentiment Analysis & Fine-tuning DistilBERT
+﻿# Practice 3 — Get Started with Hugging Face: Sentiment Analysis & Fine-tuning DistilBERT
 
 Dự án thực hành chuyên sâu về Xử lý Ngôn ngữ Tự nhiên (NLP) hiện đại với hệ sinh thái Hugging Face (`transformers`, `datasets`, `evaluate`). Dự án bao gồm toàn bộ nội dung từ lý thuyết nền tảng, thực thi suy luận với mô hình Pretrained, quy trình 7 bước chuẩn Fine-tuning trên IMDb, và đánh giá khoa học có đối chứng (Baseline vs Fine-tuned, Ma trận nhầm lẫn, Phân tích lỗi).
 
@@ -35,35 +35,19 @@ lab3_DL/
 │   ├── training.md                      # Quy trình 7 bước fine-tuning & siêu tham số
 │   ├── evaluation.md                    # Kết quả thực nghiệm, ma trận nhầm lẫn & phân tích lỗi
 │   ├── demo.md                          # Hướng dẫn chạy thử nghiệm CLI & Notebook
-│   ├── plan-progress-status.md          # Báo cáo tiến độ dự án & ma trận kiểm chuẩn
-│   └── plan-progress-status.html        # Giao diện trực quan hoá tiến độ dự án
+│   └── plan-progress-status.md          # Báo cáo tiến độ dự án & ma trận kiểm chuẩn
 ├── notebooks/
-│   ├── Practice3_HuggingFace_Final.ipynb # Notebook Jupyter chuẩn hoá duy nhất hoàn chỉnh cả 2 bài tập
-│   └── Practice3_HuggingFace_Final.html # Bản xuất HTML hoàn chỉnh kèm toàn bộ biểu đồ & minh chứng code
+│   └── Practice3_HuggingFace_Final.ipynb # Notebook Jupyter chuẩn hoá duy nhất hoàn chỉnh cả 2 bài tập
 ├── src/
 │   ├── 01_sentiment_analysis.py         # Bài 1: Pipeline, Tokenizer Deep Dive, Logits & Softmax thủ công
 │   ├── 02_train_finetune.py             # Bài 2: Fine-tuning 7 bước, Baseline, Training Curves & Error Analysis
-│   ├── 03_predict_finetuned.py          # Suy luận dự đoán câu mới với mô hình đã fine-tune
-│   └── checkpoint_manager.py            # Hệ thống quản lý & giám sát Checkpoint theo Epoch độc lập
-├── outputs/                             # Thư mục chứa kết quả thực nghiệm thực tế
-│   ├── final_model/                     # Trọng số mô hình và tokenizer sau fine-tuning (model.safetensors)
-│   ├── checkpoints/                     # Checkpoints lưu trong quá trình huấn luyện
-│   └── reports/
-│       ├── final_metrics.json           # Toàn bộ thông số và kết quả đo đạc thực tế
-│       ├── classification_report.csv    # Báo cáo phân loại chi tiết (Precision/Recall/F1)
-│       ├── confusion_matrix.csv         # Bảng số liệu ma trận nhầm lẫn
-│       ├── confusion_matrix.png         # Đồ thị Heatmap ma trận nhầm lẫn
-│       ├── training_curves.png          # Đồ thị đường cong loss và validation metrics
-│       ├── test_comparison_and_per_class.png # So sánh mô hình & chỉ số từng lớp
-│       ├── eda_distribution.png         # Phân phối nhãn & độ dài token
-│       └── error_analysis.csv           # Bảng danh sách các mẫu dự đoán sai
-├── requirements.txt                     # Danh mục thư viện phụ thuộc (transformers, datasets, evaluate...)
-├── RULES.md                             # Bộ quy tắc khoa học và kỹ thuật của dự án
-├── AI_Usage.md                          # Báo cáo sử dụng AI minh bạch theo chuẩn học thuật
-└── README.md                            # Hướng dẫn tổng quan dự án
+│   └── 03_predict_finetuned.py          # Suy luận dự đoán câu mới với mô hình đã fine-tune
+├── AUDIT_LOG.md                         # Nhật ký kiểm toán 5 giai đoạn (Description -> Gen -> Smoke -> Run -> Check)
+├── REPORT.md                            # Báo cáo thực hành chi tiết toàn diện
+├── RULES.md                             # Bộ quy tắc khoa học và chuẩn mực học thuật
+├── AI_Usage.md                          # Tuyên bố sử dụng AI minh bạch
+└── requirements.txt                     # Danh mục thư viện phụ thuộc
 ```
-
----
 
 ## 4. Hướng Dẫn Cài Đặt & Sử Dụng
 
@@ -88,12 +72,6 @@ python src/02_train_finetune.py
 ```bash
 python src/03_predict_finetuned.py --text "The cinematography was breathtaking and acting was superb!"
 ```
-
-### 4.5 Quản lý & Giám sát Checkpoint theo Epoch
-```bash
-python src/checkpoint_manager.py
-```
-*Hiển thị bảng dashboard trực quan về tiến trình lưu checkpoint từng epoch, dung lượng tệp, Validation Accuracy và nhận diện checkpoint tối ưu (`[BEST]`).*
 
 ---
 

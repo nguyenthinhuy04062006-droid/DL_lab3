@@ -41,7 +41,6 @@ graph TD
 | **Hệ số suy giảm trọng số (`weight_decay`)** | **0.01** | Regularization chuẩn $L_2$ áp dụng cho các ma trận trọng số (loại trừ bias và LayerNorm). |
 | **Độ dài cắt cụt tối đa (`max_length`)** | **128 tokens** | Tối ưu hóa thời gian chạy CPU; bao phủ đầy đủ ngữ cảnh mở đầu bài đánh giá. |
 | **Chiến lược đánh giá (`eval_strategy`)** | `"epoch"` | Đánh giá lại mô hình trên tập Validation ở cuối mỗi epoch. |
-| **Chiến lược lưu Checkpoint (`save_strategy`)** | `"epoch"` | Tự động lưu checkpoint mô hình ở cuối mỗi epoch vào `outputs/checkpoints/`. |
 | **Tiêu chí chọn mô hình (`metric_for_best_model`)** | `"accuracy"` | Chọn checkpoint đạt độ chính xác cao nhất trên tập Validation. |
 | **Tự động nạp Best Model (`load_best_model_at_end`)** | `True` | Đảm bảo mô hình cuối cùng được đánh giá là phiên bản có chất lượng tốt nhất. |
 | **Hạt giống ngẫu nhiên (`seed`)** | **42** | Cố định hoàn toàn mọi khâu ngẫu nhiên để đảm bảo tính tái lập 100%. |
@@ -71,10 +70,7 @@ Trong đó:
    - Tránh việc gọi tải metric lặp lại bên trong hàm `compute_metrics` sau mỗi batch/epoch, loại bỏ độ trễ I/O không cần thiết.
 2. **Dynamic Padding với `DataCollatorWithPadding`:**
    - Đệm động từng batch thay vì đệm tĩnh 128 tokens cho toàn bộ 800 mẫu train, giảm hơn 40% số phép tính nhân ma trận chú ý (Self-Attention Flops).
-3. **Epoch Checkpoint Management (`src/checkpoint_manager.py`):**
-   - Tích hợp `EpochCheckpointCallback` vào `Trainer` để tự động lưu siêu dữ liệu (`epoch_metadata.json`) và chỉ mục (`checkpoints_index.json`).
-   - Cung cấp công cụ CLI độc lập tra cứu và khôi phục checkpoint theo epoch.
-4. **Định Dạng Lưu Trữ An Toàn (`SafeTensors`):**
+3. **Định Dạng Lưu Trữ An Toàn (`SafeTensors`):**
    - Trọng số xuất xưởng được ghi dưới dạng `model.safetensors`, khắc phục triệt để lỗ hổng bảo mật thực thi mã tùy ý vốn có của định dạng cũ `pickle` (`pytorch_model.bin`).
 
 ---

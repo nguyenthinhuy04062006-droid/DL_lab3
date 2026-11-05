@@ -28,15 +28,15 @@ def run_pipeline_demo(model_name: str, sentence: str) -> None:
     print("=" * 70)
     print("1. SUY LUẬN NHANH VỚI HUGGING FACE PIPELINE")
     print("=" * 70)
-    print(f"Mô hình Pretrained: {model_name}")
-    print(f"Câu đầu vào: \"{sentence}\"")
+    print(f"📦 Mô hình Pretrained: {model_name}")
+    print(f"💬 Câu đầu vào: \"{sentence}\"")
 
     classifier = pipeline("sentiment-analysis", model=model_name)
     result = classifier(sentence)[0]
 
     label = result["label"]
     score = result["score"] * 100
-    print(f"- Kết quả dự đoán: {label} (Độ tự tin: {score:.2f}%)\n")
+    print(f"👉 Kết quả dự đoán: {label} (Độ tự tin: {score:.2f}%)\n")
 
 
 def run_tokenizer_deep_dive(model_name: str, sentence: str) -> None:
@@ -54,13 +54,13 @@ def run_tokenizer_deep_dive(model_name: str, sentence: str) -> None:
     input_ids = encoded["input_ids"][0].tolist()
     attention_mask = encoded["attention_mask"][0].tolist()
 
-    print(f"Câu gốc: \"{sentence}\"")
-    print(f"Sub-word Tokens ({len(tokens)} tokens): {tokens}")
-    print(f"Input IDs ({len(input_ids)} IDs kèm [CLS], [SEP]): {input_ids}")
-    print(f"Attention Mask: {attention_mask}")
+    print(f"💬 Câu gốc: \"{sentence}\"")
+    print(f"🔤 Sub-word Tokens ({len(tokens)} tokens): {tokens}")
+    print(f"🔢 Input IDs ({len(input_ids)} IDs kèm [CLS], [SEP]): {input_ids}")
+    print(f"🎭 Attention Mask: {attention_mask}")
 
     # Bảng ánh xạ từng token với ID tương ứng
-    print("\nBảng ánh xạ Token -> ID:")
+    print("\n📋 Bảng ánh xạ Token -> ID:")
     for token_id in input_ids:
         token_str = tokenizer.decode([token_id])
         print(f"   ID {token_id:>6}  --->  '{token_str}'")
@@ -92,13 +92,13 @@ def run_manual_forward_pass(model_name: str, sentence: str) -> None:
     pred_label = id2label[pred_idx]
     confidence = probabilities[pred_idx].item() * 100
 
-    print(f"Raw Logits từ mô hình: {logits[0].tolist()}")
-    print("Phân phối xác suất Softmax:")
+    print(f"⚡ Raw Logits từ mô hình: {logits[0].tolist()}")
+    print("📊 Phân phối xác suất Softmax:")
     for idx, prob in enumerate(probabilities):
         label_name = id2label[idx]
         print(f"   - Lớp {idx} ({label_name:<8}): {prob.item() * 100:>6.2f}%")
 
-    print(f"\n Dự đoán cuối cùng: {pred_label} ({confidence:.2f}%)")
+    print(f"\n⭐ Dự đoán cuối cùng: {pred_label} ({confidence:.2f}%)")
 
     # Kiểm chứng tính nhất quán toán học với pipeline trên cùng câu văn bản
     classifier = pipeline("sentiment-analysis", model=model_name)
@@ -106,7 +106,7 @@ def run_manual_forward_pass(model_name: str, sentence: str) -> None:
     assert pipe_res["label"] == pred_label, f"Lệch nhãn: {pipe_res['label']} vs {pred_label}"
     diff = abs(pipe_res["score"] - probabilities[pred_idx].item())
     assert diff < 1e-4, f"Lệch xác suất quá ngưỡng: {diff}"
-    print(f"[OK] [KIỂM CHỨNG TOÁN HỌC: assert Passed] Sai số giữa Pipeline và Thủ công: {diff:.2e}\n")
+    print(f"✅ [KIỂM CHỨNG TOÁN HỌC: assert Passed] Sai số giữa Pipeline và Thủ công: {diff:.2e}\n")
 
 
 def test_diverse_sentences(model_name: str) -> None:
@@ -130,7 +130,7 @@ def test_diverse_sentences(model_name: str) -> None:
         res = classifier(s)[0]
         label = res["label"]
         score = res["score"] * 100
-        icon = "" if label == "POSITIVE" else ""
+        icon = "🟢" if label == "POSITIVE" else "🔴"
         print(f"{icon} [{label:<8} | {score:>5.1f}%]  \"{s}\"")
     print("=" * 70 + "\n")
 
@@ -140,7 +140,7 @@ def main() -> None:
     sample_sentence = "I absolutely love using Hugging Face transformers for natural language processing!"
 
     print("\n" + "#" * 70)
-    print("PRACTICE 3 — EXERCISE 1: SENTIMENT ANALYSIS WITH HUGGING FACE")
+    print("🚀 PRACTICE 3 — EXERCISE 1: SENTIMENT ANALYSIS WITH HUGGING FACE")
     print("#" * 70 + "\n")
 
     run_pipeline_demo(model_name, sample_sentence)

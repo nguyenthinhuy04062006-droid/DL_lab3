@@ -1,4 +1,4 @@
-import sys, webbrowser
+import os, sys, webbrowser
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 
@@ -34,11 +34,11 @@ def start_server(port=8080):
             httpd = HTTPServer((host, p), LocalDashboardHandler)
             url = f"http://{host}:{p}/VISUAL/index.html"
             print("=" * 70)
-            print("LOCAL NLP DASHBOARD (VISUAL) ĐÃ KHỞI CHẠY THÀNH CÔNG")
+            print("🚀 LOCAL NLP DASHBOARD (VISUAL) ĐÃ KHỞI CHẠY THÀNH CÔNG")
             print("=" * 70)
-            print(f"- Địa chỉ truy cập chính xác: {url}")
-            print(f"- Hoặc chỉ cần vào:            http://{host}:{p}/")
-            print("Tình trạng:                 CHỈ NỘI BỘ MÁY BẠN (127.0.0.1)")
+            print(f"👉 Địa chỉ truy cập chính xác: {url}")
+            print(f"👉 Hoặc chỉ cần vào:            http://{host}:{p}/")
+            print("🔒 Tình trạng:                 CHỈ NỘI BỘ MÁY BẠN (127.0.0.1)")
             print("=" * 70 + "\n")
             
             # Tự động mở trình duyệt

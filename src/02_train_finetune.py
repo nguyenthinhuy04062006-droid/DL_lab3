@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import random
 import sys
 from pathlib import Path
@@ -42,12 +43,6 @@ from transformers import (
     TrainingArguments,
     set_seed,
 )
-
-# Tách biệt module quản lý checkpoint theo epoch chuyên biệt
-try:
-    from src.checkpoint_manager import EpochCheckpointCallback
-except ImportError:
-    from checkpoint_manager import EpochCheckpointCallback
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
@@ -107,7 +102,7 @@ def wilson_score_interval(correct: int, total: int, confidence_z: float = 1.96) 
 
 def main() -> None:
     print("\n" + "#" * 70)
-    print("PRACTICE 3 — EXERCISE 2: FINE-TUNING DISTILBERT ON IMDB")
+    print("🚀 PRACTICE 3 — EXERCISE 2: FINE-TUNING DISTILBERT ON IMDB")
     print("#" * 70 + "\n")
 
     setup_environment(seed=42)
@@ -115,7 +110,7 @@ def main() -> None:
     # -------------------------------------------------------------
     # BƯỚC 2: Tải dữ liệu nhị phân (IMDb) & Phân chia không rò rỉ
     # -------------------------------------------------------------
-    print("[Bước 2/7] Tải bộ dữ liệu IMDb & Kiểm tra phân bố nhãn...")
+    print("📥 [Bước 2/7] Tải bộ dữ liệu IMDb & Kiểm tra phân bố nhãn...")
     dataset = load_dataset("imdb")
 
     train_val_split = dataset["train"].train_test_split(test_size=0.2, seed=42)
@@ -138,7 +133,7 @@ def main() -> None:
     # BƯỚC 3: Nạp Pretrained Model & Tokenizer
     # -------------------------------------------------------------
     model_name = "distilbert/distilbert-base-uncased"
-    print(f"[Bước 3/7] Nạp Pretrained Model: {model_name}...")
+    print(f"🤖 [Bước 3/7] Nạp Pretrained Model: {model_name}...")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     id2label = {0: "NEGATIVE", 1: "POSITIVE"}
@@ -154,7 +149,7 @@ def main() -> None:
     # -------------------------------------------------------------
     # BƯỚC 4: Tiền xử lý dữ liệu (Tokenization + Dynamic Padding + Đo Truncation)
     # -------------------------------------------------------------
-    print(" [Bước 4/7] Tiền xử lý dữ liệu với Dynamic Padding & Đo độ dài Token...")
+    print("⚙️  [Bước 4/7] Tiền xử lý dữ liệu với Dynamic Padding & Đo độ dài Token...")
     raw_lengths = [len(tokenizer.encode(t, truncation=False)) for t in small_test_dataset["text"]]
     truncated_count = sum(1 for l in raw_lengths if l > 128)
     truncation_rate = (truncated_count / len(raw_lengths)) * 100
@@ -172,7 +167,7 @@ def main() -> None:
     # -------------------------------------------------------------
     # BƯỚC 5: Thiết lập siêu tham số TrainingArguments
     # -------------------------------------------------------------
-    print("\n[Bước 5/7] Cấu hình TrainingArguments...")
+    print("\n📋 [Bước 5/7] Cấu hình TrainingArguments...")
     training_args = TrainingArguments(
         output_dir=str(CHECKPOINTS_DIR),
         eval_strategy="epoch",
@@ -185,6 +180,7 @@ def main() -> None:
         seed=42,
         load_best_model_at_end=True,
         metric_for_best_model="accuracy",
+        logging_dir=str(OUTPUTS_DIR / "logs"),
         logging_steps=10,
         report_to="none",
     )
@@ -192,7 +188,7 @@ def main() -> None:
     # -------------------------------------------------------------
     # BƯỚC 6: Tạo Trainer, đo Baseline trên Validation & Fine-tune
     # -------------------------------------------------------------
-    print(" [Bước 6/7] Khởi tạo Trainer...")
+    print("🏋️  [Bước 6/7] Khởi tạo Trainer...")
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -201,11 +197,10 @@ def main() -> None:
         processing_class=tokenizer,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
-        callbacks=[EpochCheckpointCallback()],
     )
 
     # Đánh giá Baseline thực sự trên cả Validation và Test trước huấn luyện (Untrained Head)
-    print("   - Đánh giá Baseline Untrained Head trên Validation Set...")
+    print("   👉 Đánh giá Baseline Untrained Head trên Validation Set...")
     untrained_val_metrics = trainer.evaluate(eval_dataset=tokenized_val, metric_key_prefix="untrained_val")
     base_val_acc = untrained_val_metrics.get("untrained_val_accuracy", 0.0)
     base_val_f1 = untrained_val_metrics.get("untrained_val_f1", 0.0)
@@ -213,7 +208,7 @@ def main() -> None:
     print(f"      Baseline Validation Accuracy: {base_val_acc * 100:.2f}%")
     print(f"      Baseline Validation Macro-F1: {base_val_f1 * 100:.2f}%")
 
-    print("   - Đánh giá Baseline Untrained Head trên Test Set...")
+    print("   👉 Đánh giá Baseline Untrained Head trên Test Set...")
     untrained_test_metrics = trainer.evaluate(eval_dataset=tokenized_test, metric_key_prefix="untrained_test")
     base_test_acc = untrained_test_metrics.get("untrained_test_accuracy", 0.0)
     base_test_f1 = untrained_test_metrics.get("untrained_test_f1", 0.0)
@@ -222,18 +217,18 @@ def main() -> None:
     print(f"      Baseline Test Macro-F1:       {base_test_f1 * 100:.2f}%\n")
 
     # Tiến hành Fine-tuning
-    print("   - Bắt đầu huấn luyện...")
+    print("   👉 Bắt đầu huấn luyện...")
     train_result = trainer.train()
 
     # Lưu mô hình hoàn thiện
     trainer.save_model(str(FINAL_MODEL_DIR))
     tokenizer.save_pretrained(str(FINAL_MODEL_DIR))
-    print(f"   Mô hình cuối đã lưu vào: {FINAL_MODEL_DIR}\n")
+    print(f"   💾 Mô hình cuối đã lưu vào: {FINAL_MODEL_DIR}\n")
 
     # -------------------------------------------------------------
     # BƯỚC 7: Đánh giá mô hình sau khi Fine-tune trên Test Set
     # -------------------------------------------------------------
-    print("[Bước 7/7] Đánh giá toàn diện trên tập Test...")
+    print("📊 [Bước 7/7] Đánh giá toàn diện trên tập Test...")
     test_metrics = trainer.evaluate(eval_dataset=tokenized_test)
 
     # Dự đoán trên toàn bộ tập test để vẽ Confusion Matrix và Error Analysis
@@ -301,7 +296,7 @@ def main() -> None:
     _test_loss = test_metrics.get("eval_loss", 0.0)
 
     final_metrics_payload = {
-        # ── Flat keys (backward-compatible với notebook & docs) ──
+        # ── Flat keys (tương thích ngược với notebook & docs) ──
         "test_accuracy": round(_test_acc * 100, 4),
         "test_macro_f1": round(_test_f1 * 100, 4),
         "test_precision": round(_test_prec * 100, 4),
@@ -323,13 +318,14 @@ def main() -> None:
         "train_samples": len(small_train_dataset),
         "validation_samples": len(small_val_dataset),
         "test_samples": len(small_test_dataset),
+        "majority_class_baseline": majority_baseline,
         "truncation_rate_test": truncation_rate / 100,
         "baseline_val_metrics": {
             "accuracy": base_val_acc,
             "f1": base_val_f1,
             "loss": base_val_loss,
         },
-        "baseline_test_metrics": {
+        "baseline_metrics": {
             "accuracy": base_test_acc,
             "f1": base_test_f1,
             "loss": base_test_loss,
@@ -359,7 +355,7 @@ def main() -> None:
         json.dump(final_metrics_payload, f, indent=2, ensure_ascii=False)
 
     print("\n" + "=" * 70)
-    print("HOÀN TẤT HUẤN LUYỆN VÀ ĐÁNH GIÁ (CHUẨN HỌC THUẬT):")
+    print("🎉 HOÀN TẤT HUẤN LUYỆN VÀ ĐÁNH GIÁ (CHUẨN HỌC THUẬT):")
     print(f"   - Baseline Accuracy (Val):    {base_val_acc * 100:.2f}%")
     print(f"   - Majority-Class (Test):       {majority_baseline * 100:.2f}%")
     print(f"   - Fine-tuned Accuracy (Test):  {test_metrics.get('eval_accuracy', 0.0)*100:.2f}%")

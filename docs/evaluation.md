@@ -60,8 +60,8 @@ Trích xuất từ [confusion_matrix.csv](../outputs/reports/confusion_matrix.cs
 
 | Thực Tế \ Dự Đoán | Dự đoán NEGATIVE (0) | Dự đoán POSITIVE (1) | Tổng thực tế |
 |:---|:---:|:---:|:---:|
-| **Thực tế NEGATIVE (0)** | **TN = 86** (True Negative) [OK] | **FP = 18** (False Positive) [X] | 104 mẫu |
-| **Thực tế POSITIVE (1)** | **FN = 30** (False Negative) [X] | **TP = 66** (True Positive) [OK] | 96 mẫu |
+| **Thực tế NEGATIVE (0)** | **TN = 86** (True Negative) ✅ | **FP = 18** (False Positive) ❌ | 104 mẫu |
+| **Thực tế POSITIVE (1)** | **FN = 30** (False Negative) ❌ | **TP = 66** (True Positive) ✅ | 96 mẫu |
 | **Tổng dự đoán** | 116 mẫu | 84 mẫu | **200 mẫu** |
 
 ### Đánh giá các thành phần sai số:

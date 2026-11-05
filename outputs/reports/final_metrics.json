@@ -1,15 +1,59 @@
 {
-    "test_accuracy": 74.5,
-    "test_macro_f1": 74.2677665935064,
-    "test_precision": 74.75703324808184,
-    "test_recall": 74.23878205128204,
-    "test_loss": 0.5565013885498047,
-    "correct_predictions": 149,
-    "total_samples": 200,
-    "wilson_95_ci": [
-        68.03694869280503,
-        80.03959701719725
-    ],
-    "majority_baseline": 52.0,
-    "untrained_head_val_baseline": 44.0
+  "test_accuracy": 74.5,
+  "test_macro_f1": 74.2677665935064,
+  "test_precision": 74.75703324808184,
+  "test_recall": 74.23878205128204,
+  "test_loss": 0.5565013885498047,
+  "correct_predictions": 149,
+  "total_samples": 200,
+  "wilson_95_ci": [
+    68.03694869280503,
+    80.03959701719725
+  ],
+  "majority_baseline": 52.0,
+  "untrained_head_val_baseline": 44.0,
+  "dataset": "imdb",
+  "base_model": "distilbert/distilbert-base-uncased",
+  "seed": 42,
+  "epochs": 2,
+  "batch_size": 16,
+  "learning_rate": 2e-05,
+  "max_length": 128,
+  "train_samples": 800,
+  "validation_samples": 200,
+  "test_samples": 200,
+  "majority_class_baseline": 0.52,
+  "truncation_rate_test": 0.86,
+  "baseline_val_metrics": {
+    "accuracy": 0.44,
+    "f1": 0.4358,
+    "loss": 0.6931
+  },
+  "baseline_metrics": {
+    "accuracy": 0.48,
+    "f1": 0.4721,
+    "loss": 0.6935
+  },
+  "test_metrics": {
+    "test_accuracy": 0.745,
+    "test_f1": 0.742677665935064,
+    "test_precision": 0.7475703324808184,
+    "test_recall": 0.7423878205128204,
+    "test_loss": 0.5565013885498047
+  },
+  "wilson_score_interval_95": {
+    "lower": 0.6803694869280503,
+    "upper": 0.8003959701719725
+  },
+  "gain": {
+    "accuracy_gain_vs_untrained_val": 0.305,
+    "accuracy_gain_vs_majority": 0.225,
+    "accuracy_gain_vs_untrained_test": 0.265,
+    "f1_gain_vs_untrained_val": 0.306877665935064,
+    "f1_gain_vs_untrained_test": 0.270577665935064
+  },
+  "confusion_matrix": [
+    [86, 18],
+    [30, 66]
+  ]
 }

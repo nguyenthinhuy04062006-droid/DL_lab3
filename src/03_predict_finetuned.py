@@ -23,7 +23,7 @@ FINAL_MODEL_DIR = PROJECT_ROOT / "outputs" / "final_model"
 
 def predict(text: str) -> None:
     if not FINAL_MODEL_DIR.exists() or not (FINAL_MODEL_DIR / "config.json").exists():
-        print(f"[X] Chưa tìm thấy mô hình fine-tune tại: {FINAL_MODEL_DIR}")
+        print(f"❌ Chưa tìm thấy mô hình fine-tune tại: {FINAL_MODEL_DIR}")
         print("   Vui lòng chạy 'python src/02_train_finetune.py' trước!")
         return
 
@@ -42,12 +42,12 @@ def predict(text: str) -> None:
     pred_label = id2label.get(pred_idx, str(pred_idx))
     confidence = probs[pred_idx].item() * 100
 
-    icon = "" if pred_label == "POSITIVE" else ""
+    icon = "🟢" if pred_label == "POSITIVE" else "🔴"
 
     print("\n" + "=" * 60)
-    print("KẾT QUẢ DỰ ĐOÁN CẢM XÚC (FINE-TUNED DISTILBERT)")
+    print("🎯 KẾT QUẢ DỰ ĐOÁN CẢM XÚC (FINE-TUNED DISTILBERT)")
     print("=" * 60)
-    print(f"Câu đầu vào: \"{text}\"")
+    print(f"💬 Câu đầu vào: \"{text}\"")
     print(f"{icon} Cảm xúc dự đoán: {pred_label} (Độ tự tin: {confidence:.2f}%)")
     print("\nChi tiết xác suất từng nhãn:")
     for idx, prob in enumerate(probs):

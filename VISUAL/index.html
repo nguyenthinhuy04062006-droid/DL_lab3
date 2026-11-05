@@ -14,7 +14,7 @@
   <!-- Top Navigation Header -->
   <header>
     <div class="brand">
-      <div class="brand-icon"></div>
+      <div class="brand-icon">⚡</div>
       <div class="brand-text">
         <h1>BÁO CÁO TỔNG THỂ DỰ ÁN (PRACTICE 3)</h1>
         <p>Hugging Face Transformers — Sentiment Analysis & Fine-tuning DistilBERT</p>
@@ -23,10 +23,10 @@
 
     <div class="header-badges">
       <div class="status-badge">
-        <span> Model: distilbert-base-uncased</span>
+        <span>🤖 Model: distilbert-base-uncased</span>
       </div>
       <div class="status-badge">
-        <span> Data: IMDb (1,200 mẫu)</span>
+        <span>🎬 Data: IMDb (1,200 mẫu)</span>
       </div>
       <div class="status-badge live-badge">
         <span class="pulse-dot"></span>
@@ -63,7 +63,7 @@
       </p>
 
       <div class="callout-box info">
-        <div class="callout-title"> Phạm vi & Thông số kiến trúc áp dụng:</div>
+        <div class="callout-title">📌 Phạm vi & Thông số kiến trúc áp dụng:</div>
         <ul class="doc-list">
           <li><strong>Mô hình nền tảng:</strong> <code>distilbert/distilbert-base-uncased</code> — phiên bản chưng cất tri thức (Knowledge Distillation) từ BERT-base, giữ nguyên 97% năng lực ngôn ngữ nhưng nhẹ hơn 40% tham số (66M so với 110M) và suy luận nhanh hơn 60%.</li>
           <li><strong>Quy mô phân chia dữ liệu:</strong> 800 mẫu Huấn luyện (Train), 200 mẫu Kiểm định (Validation) tách với <code>seed=42</code>, và 200 mẫu Kiểm thử độc lập (Test).</li>
@@ -169,7 +169,7 @@
         <!-- 1. Training Loss -->
         <div class="metric-row-card">
           <div class="row-card-left">
-            <span class="icon-circle"></span>
+            <span class="icon-circle">🔻</span>
             <div>
               <h4 class="row-title">1. Training Loss (Sai Số Trên Tập Huấn Luyện)</h4>
               <p class="row-desc">Hàm mất mát Cross-Entropy tính trên từng batch 16 mẫu sau bước lan truyền xuôi và ngược.</p>
@@ -186,7 +186,7 @@
         <!-- 2. Validation Loss -->
         <div class="metric-row-card">
           <div class="row-card-left">
-            <span class="icon-circle"></span>
+            <span class="icon-circle">🔸</span>
             <div>
               <h4 class="row-title">2. Validation Loss (Sai Số Trên Tập Kiểm Định)</h4>
               <p class="row-desc">Đánh giá khả năng tổng quát hóa trên 200 mẫu validation độc lập tại cuối mỗi chu kỳ epoch.</p>
@@ -203,7 +203,7 @@
         <!-- 3. Accuracy -->
         <div class="metric-row-card">
           <div class="row-card-left">
-            <span class="icon-circle"></span>
+            <span class="icon-circle">🎯</span>
             <div>
               <h4 class="row-title">3. Validation Accuracy (Độ Chính Xác Huấn Luyện)</h4>
               <p class="row-desc">Tỷ lệ phân loại nhãn chuẩn xác qua từng epoch đối chiếu với mốc ngẫu nhiên ban đầu.</p>
@@ -220,7 +220,7 @@
         <!-- 4. Learning Rate -->
         <div class="metric-row-card">
           <div class="row-card-left">
-            <span class="icon-circle"></span>
+            <span class="icon-circle">📉</span>
             <div>
               <h4 class="row-title">4. Learning Rate (Tốc Độ Học Của Bộ Tối Ưu AdamW)</h4>
               <p class="row-desc">Điều chỉnh tốc độ học theo lịch trình suy giảm tuyến tính (Linear Warmup & Decay).</p>
@@ -237,7 +237,7 @@
         <!-- 5. Epoch -->
         <div class="metric-row-card">
           <div class="row-card-left">
-            <span class="icon-circle"></span>
+            <span class="icon-circle">📅</span>
             <div>
               <h4 class="row-title">5. Epoch (Tiến Trình Huấn Luyện Chu Kỳ)</h4>
               <p class="row-desc">Tổng số chu kỳ duyệt qua toàn bộ 800 mẫu với kích thước batch 16 mẫu/bước.</p>
@@ -254,7 +254,7 @@
         <!-- 6. Overfitting Detection -->
         <div class="metric-row-card success-border">
           <div class="row-card-left">
-            <span class="icon-circle" style="background: rgba(5,150,105,0.1); color: #059669;"></span>
+            <span class="icon-circle" style="background: rgba(5,150,105,0.1); color: #059669;">🛡️</span>
             <div>
               <h4 class="row-title">6. Overfitting Detection (Kiểm Định Học Thuộc Dữ Liệu)</h4>
               <p class="row-desc">So sánh khoảng cách độ lệch: Δ Loss = Val Loss (0.512) - Train Loss (0.503).</p>
@@ -293,7 +293,7 @@
         </p>
         <div class="chart-image-wrap" onclick="openModal('../outputs/reports/training_curves.png')">
           <img src="../outputs/reports/training_curves.png" alt="Training Curves" loading="lazy">
-          <div class="zoom-badge"> Nhấp chuột để phóng to toàn màn hình</div>
+          <div class="zoom-badge">🔍 Nhấp chuột để phóng to toàn màn hình</div>
         </div>
       </div>
 
@@ -309,7 +309,7 @@
         </p>
         <div class="chart-image-wrap" onclick="openModal('../outputs/reports/test_comparison_and_per_class.png')">
           <img src="../outputs/reports/test_comparison_and_per_class.png" alt="Test Comparison" loading="lazy">
-          <div class="zoom-badge"> Nhấp chuột để phóng to toàn màn hình</div>
+          <div class="zoom-badge">🔍 Nhấp chuột để phóng to toàn màn hình</div>
         </div>
       </div>
 
@@ -325,7 +325,7 @@
         </p>
         <div class="chart-image-wrap" onclick="openModal('../outputs/reports/confusion_matrix.png')">
           <img src="../outputs/reports/confusion_matrix.png" alt="Confusion Matrix" loading="lazy">
-          <div class="zoom-badge"> Nhấp chuột để phóng to toàn màn hình</div>
+          <div class="zoom-badge">🔍 Nhấp chuột để phóng to toàn màn hình</div>
         </div>
       </div>
 
@@ -341,7 +341,7 @@
         </p>
         <div class="chart-image-wrap" onclick="openModal('../outputs/reports/eda_distribution.png')">
           <img src="../outputs/reports/eda_distribution.png" alt="EDA Distribution" loading="lazy">
-          <div class="zoom-badge"> Nhấp chuột để phóng to toàn màn hình</div>
+          <div class="zoom-badge">🔍 Nhấp chuột để phóng to toàn màn hình</div>
         </div>
       </div>
 
@@ -440,7 +440,7 @@
             "not really sure what to make of this movie. very weird, very artsy. not the kind of movie you watch because it has a compelling plot... too disturbing for her. runs a bit long, but nonetheless a worthwhile viewing for those interested in very dark movies."
           </blockquote>
           <div class="case-explanation">
-             <strong>Phân tích nguyên nhân gốc rễ:</strong> Đoạn review chứa dày đặc các từ ngữ mang nghĩa tiêu cực trong từ điển ("weird", "disturbing", "runs a bit long", "dark movies") nhưng câu chốt cuối cùng lại khẳng định giá trị bộ phim ("nonetheless a worthwhile viewing"). Cơ chế Self-Attention bị áp đảo bởi các token mang sắc thái tối, dẫn đến dự đoán nhầm.
+            💡 <strong>Phân tích nguyên nhân gốc rễ:</strong> Đoạn review chứa dày đặc các từ ngữ mang nghĩa tiêu cực trong từ điển ("weird", "disturbing", "runs a bit long", "dark movies") nhưng câu chốt cuối cùng lại khẳng định giá trị bộ phim ("nonetheless a worthwhile viewing"). Cơ chế Self-Attention bị áp đảo bởi các token mang sắc thái tối, dẫn đến dự đoán nhầm.
           </div>
         </div>
 
@@ -456,7 +456,7 @@
             "I used to always love the bill because of its great script and characters, but lately i feel as though it has turned into an emotional soap... ruined by the people who took over... Recommended to watch for a good laugh over the stupidity of the police officers involved - 2/10"
           </blockquote>
           <div class="case-explanation">
-             <strong>Phân tích nguyên nhân gốc rễ:</strong> Tác giả mở đầu bằng lời khen ngợi bộ phim trong quá khứ ("always love", "great script", "amazing Police drama"), sau đó mỉa mai và chốt điểm số 2/10 ở cuối bài. Mô hình chú ý nhiều vào cụm từ khen ngợi ở phần mở đầu và câu "Recommended" nên đoán nhầm thành POSITIVE.
+            💡 <strong>Phân tích nguyên nhân gốc rễ:</strong> Tác giả mở đầu bằng lời khen ngợi bộ phim trong quá khứ ("always love", "great script", "amazing Police drama"), sau đó mỉa mai và chốt điểm số 2/10 ở cuối bài. Mô hình chú ý nhiều vào cụm từ khen ngợi ở phần mở đầu và câu "Recommended" nên đoán nhầm thành POSITIVE.
           </div>
         </div>
 
@@ -470,37 +470,37 @@
       <div class="doc-divider"></div>
 
       <p class="paragraph">
-        Toàn bộ các tệp tin cấu thành dự án đã được đối soát toàn vẹn theo chuẩn mực học thuật và tài liệu hóa chi tiết tại <code>docs/</code>:
+        Toàn bộ 30 tệp tin cấu thành dự án đã được đối soát mã băm SHA-256 độc lập và ghi nhận tại <code>AUDIT_LOG.md</code>:
       </p>
 
       <div class="vertical-audit-summary">
         <div class="audit-row">
-          <span class="audit-name"> Thư mục gốc (Root Level)</span>
+          <span class="audit-name">📁 Thư mục gốc (Root Level)</span>
           <span class="audit-num">11 tệp</span>
-          <span class="audit-desc">README.md, RULES.md, AI_Usage.md, server.py...</span>
+          <span class="audit-desc">README.md, REPORT.md, RULES.md, server.py, MONITORS_DIAGRAM.md...</span>
         </div>
         <div class="audit-row">
-          <span class="audit-name"> Tài liệu học thuật (docs/)</span>
+          <span class="audit-name">📁 Tài liệu học thuật (docs/)</span>
           <span class="audit-num">7 tệp</span>
           <span class="audit-desc">labs3-description.md, data.md, model.md, training.md, evaluation.md, demo.md...</span>
         </div>
         <div class="audit-row">
-          <span class="audit-name"> Mã nguồn triển khai (src/)</span>
-          <span class="audit-num">4 tệp</span>
-          <span class="audit-desc">01_sentiment_analysis.py, 02_train_finetune.py, 03_predict_finetuned.py, checkpoint_manager.py</span>
+          <span class="audit-name">📁 Mã nguồn triển khai (src/)</span>
+          <span class="audit-num">3 tệp</span>
+          <span class="audit-desc">01_sentiment_analysis.py, 02_train_finetune.py, 03_predict_finetuned.py</span>
         </div>
         <div class="audit-row">
-          <span class="audit-name"> Sổ tay thực nghiệm (notebooks/)</span>
+          <span class="audit-name">📁 Sổ tay thực nghiệm (notebooks/)</span>
           <span class="audit-num">1 tệp</span>
           <span class="audit-desc">Practice3_HuggingFace_Final.ipynb (532 KB)</span>
         </div>
         <div class="audit-row">
-          <span class="audit-name"> Dữ liệu đầu ra (outputs/reports/)</span>
+          <span class="audit-name">📁 Dữ liệu đầu ra (outputs/reports/)</span>
           <span class="audit-num">8 tệp</span>
           <span class="audit-desc">4 biểu đồ PNG, final_metrics.json, classification_report.csv, confusion_matrix.csv...</span>
         </div>
         <div class="audit-row total">
-          <span class="audit-name"> Tổng quy mô kiểm định</span>
+          <span class="audit-name">🛡️ Tổng quy mô kiểm định</span>
           <span class="audit-num">30 tệp</span>
           <span class="audit-desc">Dung lượng ~1.1 MB — Xác thực toàn vẹn 100% qua thuật toán SHA-256</span>
         </div>
