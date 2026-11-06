@@ -120,7 +120,29 @@ Dataset gốc IMDb
 - Tập Test (`dataset["test"]`) đến từ phân vùng hoàn toàn độc lập với tập Train.
 - Test Set chỉ được sử dụng **một lần duy nhất** ở bước đánh giá cuối cùng.
 
-#### 3.2.2 Cấu hình Siêu tham số
+#### 3.2.2 Cấu hình Siêu tham số & Quá trình Tối ưu hóa (Optimization)
+
+| Siêu tham số | Giá trị |
+|:---|:---:|
+| `learning_rate` | $2 \times 10^{-5}$ |
+| `per_device_train_batch_size` | $16$ |
+| `num_train_epochs` | $2$ ($100$ optimization steps) |
+| `weight_decay` | $0.01$ |
+| `max_length` (truncation) | $128$ tokens |
+| `seed` | $42$ |
+| `eval_strategy` | `"epoch"` |
+| `metric_for_best_model` | `"accuracy"` |
+| `load_best_model_at_end` | `True` |
+
+**Bảng theo dõi tiến trình huấn luyện và chọn Best Validation Accuracy:**
+
+| Epoch | Optimization Step | Training Loss | Validation Loss | Validation Accuracy (%) |
+|:---:|:---:|---:|---:|---:|
+| 0 (Untrained) | 0 | — | 0.6974 | 44.00% |
+| Epoch 1 | 50 | 0.6155 | 0.5998 | 69.50% |
+| **Epoch 2 (Best)** | **100** | **0.5032** | **0.5118** | **76.50%** |
+
+*Nhận xét:* Mô hình đạt **Best Validation Accuracy = 76.50%** tại Epoch 2 (Step 100). Do cấu hình `load_best_model_at_end=True` với `metric_for_best_model="accuracy"`, checkpoint tại Epoch 2 được tự động chọn làm mô hình tối ưu nhất để lưu vào `outputs/final_model/` và dùng để đánh giá trên tập Test.
 
 | Siêu tham số | Giá trị |
 |:---|:---:|
