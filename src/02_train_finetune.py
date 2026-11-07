@@ -147,6 +147,30 @@ def main() -> None:
     )
 
     # -------------------------------------------------------------
+    # KHÁM PHÁ KIẾN TRÚC MÔ HÌNH (Explore Model Architecture)
+    # -------------------------------------------------------------
+    print("\n" + "=" * 80)
+    print("🔍 KHÁM PHÁ KIẾN TRÚC MÔ HÌNH (Explore Model Architecture):")
+    print("=" * 80)
+    print(model)
+    print("=" * 80)
+
+    total_params = 0
+    trainable_params = 0
+    print(f"{'Tên Layer / Module':<55} | {'Shape':<18} | {'Tham số':>12} | {'Trainable'}")
+    print("-" * 100)
+    for name, param in model.named_parameters():
+        p_count = param.numel()
+        total_params += p_count
+        if param.requires_grad:
+            trainable_params += p_count
+        print(f"{name:<55} | {str(list(param.shape)):<18} | {p_count:>12,} | {str(param.requires_grad)}")
+    print("=" * 100)
+    print(f"Tổng số tham số của mô hình:        {total_params:,}")
+    print(f"Số tham số huấn luyện (Trainable):   {trainable_params:,} (100% fine-tuning)")
+    print("=" * 100 + "\n")
+
+    # -------------------------------------------------------------
     # BƯỚC 4: Tiền xử lý dữ liệu (Tokenization + Dynamic Padding + Đo Truncation)
     # -------------------------------------------------------------
     print("⚙️  [Bước 4/7] Tiền xử lý dữ liệu với Dynamic Padding & Đo độ dài Token...")

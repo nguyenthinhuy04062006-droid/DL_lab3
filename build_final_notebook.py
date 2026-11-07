@@ -467,9 +467,13 @@ data_collator = DataCollatorWithPadding(tokenizer=imdb_tokenizer)
 print("-> Đã hoàn tất Tokenization và tạo DataCollatorWithPadding thành công!")""")
 
     add_cell("markdown", """<a id="sec3_5"></a>
-### 3.5 Khởi tạo DistilBERT & Hàm đánh giá đa chỉ số
-- **Mô hình nền tảng:** Sử dụng `distilbert-base-uncased` (chỉ gồm backbone Transformer đã được huấn luyện với bài toán Masked Language Modeling, chưa có đầu ra phân loại).
-- **Classification Head:** Khi nạp qua `AutoModelForSequenceClassification` với `num_labels=2`, một lớp Dense tuyến tính ($768 \\to 2$) được gắn vào vị trí vector biểu diễn của token `[CLS]`. Đầu phân loại này mang các trọng số khởi tạo ngẫu nhiên.
+### 3.5 Khởi tạo DistilBERT, Khám phá kiến trúc mô hình & Cấu hình Metrics
+- **Lý do chọn DistilBERT:** 
+  1. *Hiệu quả tính toán:* 6 layers, ~66.96M tham số (nhẹ hơn 40%, nhanh hơn 60% so với BERT-base), tránh quá tải phần cứng khi thực hành.
+  2. *Bảo lưu tri thức:* Giữ >97% năng lực hiểu ngôn ngữ tự nhiên thông qua chưng cất tri thức (Knowledge Distillation).
+  3. *Ngữ cảnh hai chiều:* Cơ chế Multi-Head Self-Attention nhìn toàn diện hai chiều, vượt trội hơn các mô hình sinh tuần tự (Causal Decoder) hay mô hình truyền thống (RNN/LSTM).
+- **Khám phá kiến trúc mô hình (Explore Architecture):** In toàn bộ cấu trúc mạng (`print(imdb_model)`) và bóc tách bảng phân rã chi tiết từng lớp và tham số.
+- **Classification Head:** Khi nạp qua `AutoModelForSequenceClassification` với `num_labels=2`, một đầu phân loại gồm `pre_classifier` ($768 \\to 768$), hàm kích hoạt ReLU, Dropout($p=0.2$) và `classifier` ($768 \\to 2$) được gắn lên đỉnh token `[CLS]`. Hai lớp này khởi tạo ngẫu nhiên.
 - **Cố định Seed:** `set_seed(SEED)` được gọi ngay trước khi khởi tạo mô hình để cố định các trọng số ban đầu.
 - **Tối ưu hóa `compute_metrics`:** Nạp các hàm đánh giá từ `evaluate` ở phạm vi bên ngoài để tối ưu hiệu năng.""")
 
@@ -488,16 +492,31 @@ imdb_model = AutoModelForSequenceClassification.from_pretrained(
     label2id=label2id_imdb
 )
 
-# Thống kê tham số
-total_params = sum(p.numel() for p in imdb_model.parameters())
-trainable_params = sum(p.numel() for p in imdb_model.parameters() if p.requires_grad)
+# -------------------------------------------------------------
+# KHÁM PHÁ KIẾN TRÚC MÔ HÌNH (Explore Model Architecture)
+# -------------------------------------------------------------
+print("=" * 80)
+print("1. IN CẤU TRÚC MÔ HÌNH DISTILBERT (print(model)):")
+print("=" * 80)
+print(imdb_model)
+print("=" * 80)
 
-print("THÔNG TIN KIẾN TRÚC MÔ HÌNH DISTILBERT:")
-print("=" * 80)
-print(f"Backbone:                 {base_model_name}")
-print(f"Tổng số tham số:          {total_params:,} tham số")
-print(f"Số tham số có thể train:  {trainable_params:,} tham số (100% các lớp đều được fine-tune)")
-print("=" * 80)
+print("\\n2. BÓC TÁCH CÁC LỚP VÀ BẢNG THỐNG KÊ THAM SỐ CHI TIẾT:")
+print("=" * 95)
+print(f"{'Tên Layer / Module':<52} | {'Shape':<18} | {'Tham số':>12} | {'Trainable'}")
+print("-" * 95)
+total_params = 0
+trainable_params = 0
+for name, param in imdb_model.named_parameters():
+    p_cnt = param.numel()
+    total_params += p_cnt
+    if param.requires_grad:
+        trainable_params += p_cnt
+    print(f"{name:<52} | {str(list(param.shape)):<18} | {p_cnt:>12,} | {str(param.requires_grad)}")
+print("=" * 95)
+print(f"Tổng số tham số:               {total_params:,} tham số")
+print(f"Số tham số huấn luyện:         {trainable_params:,} tham số (100% fine-tuning)")
+print("=" * 95)
 
 # Nạp metrics ở module level bên ngoài compute_metrics
 metric_acc = evaluate.load("accuracy")
@@ -964,7 +983,8 @@ print("=" * 80)""")
                 print(f"[ERROR] Cell {i} syntax error: {e}")
                 raise
 
-    output_path = Path("lab3_DL/notebooks/Practice3_HuggingFace_Final.ipynb")
+    output_path = Path("notebooks/Practice3_HuggingFace_Final.ipynb")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(nb, f, ensure_ascii=False, indent=1)
     
