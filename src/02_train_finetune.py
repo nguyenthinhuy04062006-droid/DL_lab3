@@ -44,6 +44,11 @@ from transformers import (
     set_seed,
 )
 
+try:
+    from src.checkpoint_manager import EpochCheckpointCallback
+except ImportError:
+    from checkpoint_manager import EpochCheckpointCallback
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 REPORTS_DIR = OUTPUTS_DIR / "reports"
@@ -196,6 +201,7 @@ def main() -> None:
         output_dir=str(CHECKPOINTS_DIR),
         eval_strategy="epoch",
         save_strategy="epoch",
+        save_total_limit=2,
         learning_rate=2e-5,
         per_device_train_batch_size=16,
         per_device_eval_batch_size=16,
@@ -204,7 +210,6 @@ def main() -> None:
         seed=42,
         load_best_model_at_end=True,
         metric_for_best_model="accuracy",
-        logging_dir=str(OUTPUTS_DIR / "logs"),
         logging_steps=10,
         report_to="none",
     )
@@ -221,6 +226,7 @@ def main() -> None:
         processing_class=tokenizer,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
+        callbacks=[EpochCheckpointCallback(checkpoints_dir=CHECKPOINTS_DIR)],
     )
 
     # Đánh giá Baseline thực sự trên cả Validation và Test trước huấn luyện (Untrained Head)
