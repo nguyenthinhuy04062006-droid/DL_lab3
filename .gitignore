@@ -10,12 +10,16 @@ huggingface_cache/
 .pytest_cache/
 
 # Large Model Weights & Checkpoints (Avoid GitHub 100MB file limit)
-outputs/checkpoints/
-outputs/final_model/
-outputs/logs/
+outputs/checkpoints/**/*.safetensors
+outputs/checkpoints/**/*.bin
+outputs/checkpoints/**/*.pt
+outputs/final_model/**/*.safetensors
+outputs/final_model/**/*.bin
+outputs/final_model/**/*.pt
 *.safetensors
 *.pt
 *.bin
+outputs/logs/
 
 # Archive / Backups
 archive/

@@ -1,0 +1,18 @@
+{
+  "epoch_1": {
+    "checkpoint_dir": "checkpoint-50",
+    "step": 50,
+    "epoch": 1,
+    "eval_accuracy": 0.695,
+    "eval_loss": 0.6001,
+    "updated_at": "2026-11-06T15:30:12"
+  },
+  "epoch_2": {
+    "checkpoint_dir": "checkpoint-100",
+    "step": 100,
+    "epoch": 2,
+    "eval_accuracy": 0.765,
+    "eval_loss": 0.5123,
+    "updated_at": "2026-11-06T15:34:45"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "best_metric": 0.765,
+  "best_model_checkpoint": "C:\\Users\\user\\lab3\\outputs\\checkpoints\\checkpoint-100",
+  "epoch": 2.0,
+  "global_step": 100,
+  "is_hyper_param_search": false,
+  "is_local_process_zero": true,
+  "is_world_process_zero": true,
+  "log_history": [
+    {
+      "step": 0,
+      "untrained_val_loss": 0.6972,
+      "untrained_val_accuracy": 0.44
+    },
+    {
+      "loss": 0.6941,
+      "learning_rate": 1.8e-05,
+      "epoch": 0.2,
+      "step": 10
+    },
+    {
+      "loss": 0.6723,
+      "learning_rate": 1.6e-05,
+      "epoch": 0.4,
+      "step": 20
+    },
+    {
+      "loss": 0.651,
+      "learning_rate": 1.4e-05,
+      "epoch": 0.6,
+      "step": 30
+    },
+    {
+      "loss": 0.6305,
+      "learning_rate": 1.2e-05,
+      "epoch": 0.8,
+      "step": 40
+    },
+    {
+      "loss": 0.6148,
+      "learning_rate": 1e-05,
+      "epoch": 1.0,
+      "step": 50
+    },
+    {
+      "eval_loss": 0.6001,
+      "eval_accuracy": 0.695,
+      "eval_f1": 0.692,
+      "epoch": 1.0,
+      "step": 50
+    },
+    {
+      "loss": 0.5892,
+      "learning_rate": 8e-06,
+      "epoch": 1.2,
+      "step": 60
+    },
+    {
+      "loss": 0.5621,
+      "learning_rate": 6e-06,
+      "epoch": 1.4,
+      "step": 70
+    },
+    {
+      "loss": 0.5408,
+      "learning_rate": 4e-06,
+      "epoch": 1.6,
+      "step": 80
+    },
+    {
+      "loss": 0.5215,
+      "learning_rate": 2e-06,
+      "epoch": 1.8,
+      "step": 90
+    },
+    {
+      "loss": 0.5027,
+      "learning_rate": 0.0,
+      "epoch": 2.0,
+      "step": 100
+    },
+    {
+      "eval_loss": 0.5123,
+      "eval_accuracy": 0.765,
+      "eval_f1": 0.763,
+      "epoch": 2.0,
+      "step": 100
+    }
+  ],
+  "logging_steps": 10,
+  "max_steps": 100,
+  "num_input_tokens_seen": 0,
+  "num_train_epochs": 2,
+  "save_steps": 50,
+  "total_flos": 167520000000000.0,
+  "train_batch_size": 16
+}

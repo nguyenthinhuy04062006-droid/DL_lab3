@@ -1,0 +1,12 @@
+{
+  "epoch": 2,
+  "global_step": 100,
+  "timestamp": "2026-11-06T15:34:45",
+  "eval_accuracy": 0.765,
+  "eval_loss": 0.5123,
+  "train_loss": 0.5027,
+  "best_metric": 0.765,
+  "metric_for_best_model": "accuracy",
+  "is_best_so_far": true,
+  "dir_size_mb": 255.4
+}

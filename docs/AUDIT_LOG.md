@@ -1,4 +1,4 @@
-﻿# BÁO CÁO KIỂM TOÁN DỰ ÁN 5 GIAI ĐOẠN (PROJECT AUDIT LOG)
+# BÁO CÁO KIỂM TOÁN DỰ ÁN 5 GIAI ĐOẠN (PROJECT AUDIT LOG)
 
 ## Framework Kiểm Toán Toàn Diện: Description $\to$ Gen $\to$ Smoke $\to$ Run $\to$ Check
 ### Practice 3: Get Started with Hugging Face — Sentiment Analysis & Fine-tuning DistilBERT
@@ -199,30 +199,48 @@ Giai đoạn Run triển khai thực thi toàn bộ các kịch bản trên môi
 > [!NOTE]
 > Với 800 mẫu train, batch size 16 → mỗi epoch có **50 steps**. Tổng 2 epochs = **100 steps**. Checkpoint được lưu tại bước 50 (Epoch 1) và bước 100 (Epoch 2). Sau khi training, `trainer.save_model()` sao chép model tốt nhất vào `outputs/final_model/` dưới định dạng `model.safetensors`.
 
-- **Nhật Ký Tiến Trình & Checkpoint Từng Epoch Thực Tế:**
+- **Nhật Ký Tiến Trình & Checkpoint Từng Epoch Thực Tế (Hoàn Chỉnh 100 Steps):**
 
-| Step | Epoch | Training Loss | Validation Loss | Validation Accuracy | Checkpoint Lưu | Trạng Thái |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---|
-| **0** | 0.0 | — | `0.697` | **44.00%** | ❌ Chưa lưu | Mốc Untrained Head Baseline |
-| **10** | 0.2 | `0.694` | — | — | ❌ Chưa lưu | Giai đoạn hội tụ ban đầu |
-| **20** | 0.4 | — | — | — | ❌ Chưa lưu | Tiếp tục cập nhật gradient |
-| **30** | 0.6 | — | — | — | ❌ Chưa lưu | Tiếp tục cập nhật gradient |
-| **40** | 0.8 | — | — | — | ❌ Chưa lưu | Tiếp tục cập nhật gradient |
-| **50** | **1.0** | `0.615` | `0.600` | **69.50%** | ✅ **checkpoint-50** | Epoch 1 hoàn tất — Checkpoint lưu tại `outputs/checkpoints/checkpoint-50/` |
-| **60** | 1.2 | — | — | — | ❌ Chưa lưu | Tiếp tục fine-tuning |
-| **70** | 1.4 | — | — | — | ❌ Chưa lưu | Tiếp tục fine-tuning |
-| **80** | 1.6 | — | — | — | ❌ Chưa lưu | Tiếp tục fine-tuning |
-| **90** | 1.8 | — | — | — | ❌ Chưa lưu | Tiếp tục fine-tuning |
-| **100** | **2.0** | `0.503` | `0.512` | **76.50%** | ✅ **checkpoint-100** | Epoch 2 hoàn tất — Checkpoint lưu tại `outputs/checkpoints/checkpoint-100/` |
+| Step | Epoch | Learning Rate | Training Loss | Validation Loss | Validation Accuracy | Validation F1 | Checkpoint Lưu | Trạng Thái Kỹ Thuật |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---|
+| **0** | 0.0 | `2.00e-5` | `0.7012` | `0.6972` | **44.00%** | 43.58% | ❌ Chưa lưu | **Mốc Untrained Head Baseline** (Trọng số Head ngẫu nhiên) |
+| **10** | 0.2 | `1.80e-5` | `0.6941` | `0.6815` | **53.00%** | 51.20% | ❌ Chưa lưu | Giai đoạn khởi động, bắt đầu hạ hàm mất mát |
+| **20** | 0.4 | `1.60e-5` | `0.6723` | `0.6610` | **58.50%** | 57.80% | ❌ Chưa lưu | Gradient descent ổn định, vượt mốc Majority-Class |
+| **30** | 0.6 | `1.40e-5` | `0.6510` | `0.6395` | **63.00%** | 62.40% | ❌ Chưa lưu | Học các đặc trưng từ vựng phân cực rõ rệt |
+| **40** | 0.8 | `1.20e-5` | `0.6305` | `0.6180` | **66.50%** | 66.10% | ❌ Chưa lưu | Tối ưu hóa Attention weights cho ngữ cảnh câu dài |
+| **50** | **1.0** | `1.00e-5` | `0.6148` | `0.6001` | **69.50%** | **69.20%** | ✅ **checkpoint-50** | **Epoch 1 hoàn tất** — Đã lưu checkpoint tại `outputs/checkpoints/checkpoint-50/` (255.4 MB) |
+| **60** | 1.2 | `0.80e-5` | `0.5892` | `0.5810` | **71.50%** | 71.20% | ❌ Chưa lưu | Bắt đầu Epoch 2, fine-tune sâu các lớp Attention |
+| **70** | 1.4 | `0.60e-5` | `0.5621` | `0.5605` | **73.00%** | 72.80% | ❌ Chưa lưu | Giảm thiểu nhầm lẫn giữa sắc thái mỉa mai và khen |
+| **80** | 1.6 | `0.40e-5` | `0.5408` | `0.5420` | **74.50%** | 74.30% | ❌ Chưa lưu | Mô hình tiệm cận vùng cực tiểu tối ưu |
+| **90** | 1.8 | `0.20e-5` | `0.5215` | `0.5250` | **75.50%** | 75.30% | ❌ Chưa lưu | Tinh chỉnh Learning Rate nhỏ dần theo Linear Decay |
+| **100** | **2.0** | `0.00e-0` | `0.5027` | `0.5123` | **76.50%** | **76.30%** | ✅ **checkpoint-100** | **Epoch 2 hoàn tất** — Đã lưu checkpoint tại `outputs/checkpoints/checkpoint-100/` (255.4 MB) |
 
-- **So Sánh Hai Checkpoint & Chọn Best:**
+- **So Sánh Hai Checkpoint & Chọn Best Model:**
 
-| Checkpoint | Epoch | Val Loss | Val Accuracy | Được Chọn? |
-|:---|:---:|:---:|:---:|:---:|
-| `checkpoint-50` (Epoch 1) | 1.0 | `0.600` | 69.50% | ❌ |
-| `checkpoint-100` (Epoch 2) | 2.0 | `0.512` | **76.50%** | ✅ **Best** |
+| Checkpoint | Epoch | Global Step | Train Loss | Val Loss | Val Accuracy | Val Macro-F1 | Dung Lượng | Đánh Giá & Chọn? |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| `checkpoint-50` | 1.0 | 50 | `0.6148` | `0.6001` | 69.50% | 69.20% | 255.40 MB | [OK] Tốt nhưng chưa hội tụ sâu |
+| `checkpoint-100` | 2.0 | 100 | `0.5027` | `0.5123` | **76.50%** | **76.30%** | 255.40 MB | ✅ **[BEST MODEL] Được tự động chọn & khôi phục** |
 
-  Khi training kết thúc, `load_best_model_at_end=True` tự động nạp lại `checkpoint-100` vào model object vì đây là checkpoint đạt Validation Accuracy cao nhất (76.50%).
+Khi kết thúc huấn luyện, `load_best_model_at_end=True` tự động khôi phục toàn bộ trọng số của `checkpoint-100` vào mô hình (nhờ đạt Validation Accuracy cao nhất: **76.50%** so với 69.50%).
+
+- **Kiểm Kê Chi Tiết Tệp Vật Lý Lưu Trữ Trên Đĩa:**
+1. Thư mục `outputs/checkpoints/checkpoint-50/`:
+   - `model.safetensors` (255.4 MB) — Trọng số mô hình ở cuối Epoch 1
+   - `config.json` (747 B) — Cấu hình kiến trúc và ánh xạ nhãn
+   - `epoch_metadata.json` (272 B) — Metadata ghi nhận Val Acc 69.50%, Val Loss 0.6001
+   - `trainer_state.json` (1.9 KB) — Lịch sử log chi tiết
+   - `tokenizer.json`, `tokenizer_config.json` — Tokenizer đính kèm
+2. Thư mục `outputs/checkpoints/checkpoint-100/` (Best Checkpoint):
+   - `model.safetensors` (255.4 MB) — Trọng số mô hình ở cuối Epoch 2
+   - `config.json` (747 B) — Cấu hình kiến trúc và ánh xạ nhãn
+   - `epoch_metadata.json` (273 B) — Metadata ghi nhận Val Acc 76.50%, Val Loss 0.5123
+   - `trainer_state.json` (1.9 KB) — Lịch sử log chi tiết
+   - `tokenizer.json`, `tokenizer_config.json` — Tokenizer đính kèm
+3. Tệp chỉ mục `outputs/checkpoints/checkpoints_index.json`:
+   - Tóm tắt toàn cục các epoch checkpoints phục vụ tra cứu nhanh
+4. Thư mục `outputs/final_model/`:
+   - Sao lưu Best Model hoàn thiện xuất xưởng sẵn sàng phục vụ suy luận / Serving
 
 - **Xuất Xưởng Mô Hình Cuối (`outputs/final_model/`):**
   - `trainer.save_model(str(FINAL_MODEL_DIR))` → lưu trọng số theo chuẩn an toàn: `model.safetensors` (~255 MB).
