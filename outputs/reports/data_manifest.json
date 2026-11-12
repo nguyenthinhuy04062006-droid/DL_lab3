@@ -1,0 +1,73 @@
+{
+  "metadata": {
+    "dataset_name": "imdb",
+    "dataset_version": "plain_text",
+    "seed": 42,
+    "stratified": false,
+    "train_samples": 800,
+    "val_samples": 200,
+    "test_samples": 200,
+    "train_distribution": {
+      "1": 392,
+      "0": 408
+    },
+    "val_distribution": {
+      "1": 96,
+      "0": 104
+    },
+    "test_distribution": {
+      "1": 96,
+      "0": 104
+    },
+    "train_majority_class": 0,
+    "train_majority_class_name": "NEGATIVE"
+  },
+  "total_records": 1200,
+  "manifest_preview": [
+    {
+      "sample_id": "train_0000",
+      "split": "train",
+      "split_index": 0,
+      "label": 1,
+      "label_name": "POSITIVE",
+      "text_char_length": 758,
+      "text_md5": "52dc0db941387297af8676e8ab241543"
+    },
+    {
+      "sample_id": "train_0001",
+      "split": "train",
+      "split_index": 1,
+      "label": 1,
+      "label_name": "POSITIVE",
+      "text_char_length": 675,
+      "text_md5": "e5fbb36c60e01205108fcec215af4ed8"
+    },
+    {
+      "sample_id": "train_0002",
+      "split": "train",
+      "split_index": 2,
+      "label": 0,
+      "label_name": "NEGATIVE",
+      "text_char_length": 1038,
+      "text_md5": "da9226f36e69e0ba7bad494dac0bffa0"
+    },
+    {
+      "sample_id": "train_0003",
+      "split": "train",
+      "split_index": 3,
+      "label": 1,
+      "label_name": "POSITIVE",
+      "text_char_length": 720,
+      "text_md5": "9d6e1446bfe4e554bbc795d7253f223f"
+    },
+    {
+      "sample_id": "train_0004",
+      "split": "train",
+      "split_index": 4,
+      "label": 0,
+      "label_name": "NEGATIVE",
+      "text_char_length": 3918,
+      "text_md5": "8378d52de8edb710bc9e6647773fa315"
+    }
+  ]
+}

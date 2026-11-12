@@ -1,0 +1,33 @@
+# Virtual Environments & Python Cache
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.cache/
+huggingface_cache/
+.pytest_cache/
+
+# Large Model Weights & Checkpoints (Avoid GitHub 100MB file limit)
+outputs/checkpoints/
+outputs/final_model/
+outputs/logs/
+*.safetensors
+*.pt
+*.bin
+
+# Archive / Backups
+archive/
+
+# Submission zip & archives
+*.zip
+Practice3_Submission.zip
+
+# IDE
+.vscode/
+*.code-workspace
+
+notebooks/outputs/
+
+scratch/

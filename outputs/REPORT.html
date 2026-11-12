@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Báo Cáo Nghiệm Thu Practice 3 — Hugging Face & DistilBERT</title>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.65;
+        color: #24292e;
+        max-width: 960px;
+        margin: 40px auto;
+        padding: 0 24px;
+        background-color: #ffffff;
+    }
+    h1 { color: #0d47a1; border-bottom: 2px solid #0d47a1; padding-bottom: 8px; margin-top: 30px; font-size: 26px; }
+    h2 { color: #1565c0; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; margin-top: 28px; font-size: 21px; }
+    h3 { color: #1976d2; margin-top: 22px; font-size: 17px; }
+    h4 { color: #424242; margin-top: 18px; font-size: 15px; }
+    table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    th, td { border: 1px solid #e1e4e8; padding: 10px 14px; text-align: left; }
+    th { background-color: #f1f8ff; color: #0366d6; font-weight: 600; }
+    tr:nth-child(even) { background-color: #fcfcfc; }
+    code { background-color: rgba(27,31,35,0.06); padding: 0.2em 0.4em; border-radius: 4px; font-family: Consolas, "Courier New", monospace; font-size: 88%; }
+    pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; overflow: auto; border: 1px solid #e1e4e8; font-size: 13px; }
+    blockquote { padding: 8px 16px; color: #424242; border-left: 4px solid #2196f3; background: #e3f2fd; margin: 18px 0; border-radius: 0 4px 4px 0; }
+    .figure-box { text-align: center; margin: 25px 0; padding: 12px; border: 1px solid #eaecef; border-radius: 8px; background: #fafbfc; }
+    .figure-box img { max-width: 95%; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .caption { margin-top: 8px; font-size: 13.5px; color: #586069; }
+    hr { border: 0; height: 1px; background: #e1e4e8; margin: 30px 0; }
+    @media print {
+        body { max-width: 100%; margin: 0; padding: 10mm; font-size: 12pt; }
+        .figure-box { page-break-inside: avoid; }
+    }
+</style>
+</head>
+<body>
+<h1>BÁO CÁO DỰ ÁN</h1>
+<h2>PRACTICE 3: GET STARTED WITH HUGGING FACE</h2>
+<h3>Phân loại cảm xúc (Sentiment Analysis) & Fine-tuning DistilBERT</h3>
+<hr>
+<blockquote>**Thông tin dự án**</blockquote>
+<blockquote></blockquote>
+<blockquote>| Mục | Chi tiết |</blockquote>
+<blockquote>|-----|---------|</blockquote>
+<blockquote>| **Dự án** | Practice 3 — Get started with Hugging Face |</blockquote>
+<blockquote>| **Mô hình** | DistilBERT (`distilbert/distilbert-base-uncased`) |</blockquote>
+<blockquote>| **Dữ liệu** | IMDb Movie Reviews (`stanfordnlp/imdb`) |</blockquote>
+<blockquote>| **Mã nguồn** | `src/01_sentiment_analysis.py`, `src/02_train_finetune.py`, `src/03_predict_finetuned.py` |</blockquote>
+<blockquote>| **Kết quả xuất** | `outputs/reports/final_metrics.json`, `outputs/final_model/` |</blockquote>
+<hr>
+<h2>1. Mục Tiêu Thực Hành</h2>
+<p>Dự án triển khai và hoàn thành hai nội dung kỹ thuật chính:</p>
+<p>- <strong>Exercise 1 — Chạy suy luận (Inference):</strong> Sử dụng pipeline Hugging Face, phân tích cơ chế Tokenizer (WordPiece sub-words, token IDs, attention mask) và tính toán thủ công xác suất từ logits qua hàm Softmax.</p>
+<p>- <strong>Exercise 2 — Tinh chỉnh mô hình (Fine-tuning):</strong> Thực hiện quy trình 7 bước huấn luyện DistilBERT trên dữ liệu IMDb, đối chiếu hiệu năng trước/sau khi huấn luyện và phân tích chi tiết các ca dự đoán sai.</p>
+<hr>
+<h2>2. Cơ Sở Lý Thuyết</h2>
+<h3>2.1 Bài toán Phân tích Cảm xúc (Sentiment Analysis)</h3>
+<p>- <strong>Mục tiêu:</strong> Phân loại cảm xúc của văn bản đánh giá phim thành hai nhóm nhị phân:</p>
+<p>- Nhãn 0 (<code>NEGATIVE</code>): Cảm xúc tiêu cực.</p>
+<p>- Nhãn 1 (<code>POSITIVE</code>): Cảm xúc tích cực.</p>
+<h3>2.2 Kiến trúc Transformer và DistilBERT</h3>
+<p>- <strong>Transformer:</strong> Cơ chế Self-Attention cho phép xử lý song song toàn bộ chuỗi văn bản, thay thế hoàn toàn mạng tuần hoàn RNN/LSTM.</p>
+<p>- <strong>DistilBERT:</strong> Bản thu gọn của BERT qua kỹ thuật nén tri thức (Knowledge Distillation). Giảm kích thước và tăng tốc độ xử lý nhưng vẫn giữ nguyên độ chính xác cao.</p>
+<table>
+<tr><th>Tiêu chí</th><th>Model gốc (Teacher)</th><th>Model tinh gọn (Student)</th></tr>
+<tr><td>**Tên mô hình**</td><td>`bert-base-uncased`</td><td>`distilbert-base-uncased`</td></tr>
+<tr><td>**Số tầng (Layers)**</td><td>12</td><td>6</td></tr>
+<tr><td>**Số tham số**</td><td>110 triệu</td><td>66 triệu (giảm 40%)</td></tr>
+<tr><td>**Tốc độ xử lý**</td><td>Chuẩn baseline</td><td>Nhanh hơn 60%</td></tr>
+<tr><td>**Hiệu năng giữ lại**</td><td>100%</td><td>> 97%</td></tr>
+</table>
+<h3>2.3 Cơ chế Tokenizer — WordPiece Sub-word</h3>
+<p>Tokenizer tách văn bản thành các đơn vị sub-word để xử lý từ vựng linh hoạt:</p>
+<p>- <strong>Từ thông dụng:</strong> Giữ nguyên từ gốc (ví dụ: <code>"movie"</code>, <code>"great"</code>).</p>
+<p>- <strong>Từ hiếm / từ ghép:</strong> Tách thành các phần nhỏ với tiền tố <code>##</code> (ví dụ: <code>"horrifically"</code> → <code>['horrific', '##ally']</code>).</p>
+<p>- <strong>Token điều khiển:</strong></p>
+<p>- <code>[CLS]</code> (ID 101): Đặt ở đầu câu, đại diện cho vector ngữ nghĩa của toàn bộ văn bản để đưa vào bộ phân loại.</p>
+<p>- <code>[SEP]</code> (ID 102): Đánh dấu vị trí kết thúc câu.</p>
+<p>- <strong>Attention Mask:</strong> Mảng nhị phân giúp mô hình phân biệt token thực (giá trị 1) và token đệm <code>[PAD]</code> (giá trị 0).</p>
+<h3>2.4 Đệm động theo mẻ (`DataCollatorWithPadding`)</h3>
+<p>- <strong>Dynamic Padding:</strong> Tự động đệm các chuỗi trong từng mini-batch theo độ dài của câu dài nhất trong batch đó, thay vì đệm toàn bộ tập dữ liệu về độ dài tối đa cố định (128).</p>
+<p>- <strong>Tối ưu tài nguyên:</strong> Giảm thiểu đáng kể tính toán thừa trên token đệm <code>[PAD]</code> (vốn có độ phức tạp Self-Attention bậc hai $\mathcal{O}(L^2)$ theo chiều dài chuỗi $L$), qua đó tiết kiệm bộ nhớ RAM/VRAM và rút ngắn thời gian xử lý so với padding tĩnh.</p>
+<h3>2.5 Transfer Learning và Fine-tuning</h3>
+<p>- <strong>Pre-training:</strong> Huấn luyện trước mô hình trên kho ngữ liệu khổng lồ (Wikipedia + BookCorpus) để nắm vững ngữ pháp và biểu diễn ngữ nghĩa tổng quát.</p>
+<p>- <strong>Fine-tuning toàn diện (Full Fine-tuning):</strong> Cập nhật đồng thời toàn bộ 6 khối Transformer Encoder cùng tầng phân loại mới (Sequence Classification Head, 66.9M tham số) trên tập dữ liệu IMDb với tốc độ học nhỏ (<code>learning_rate = 2e-5</code>) và cơ chế phân rã trọng số AdamW (<code>weight_decay = 0.01</code>) nhằm tránh hiện tượng quên thảm họa (catastrophic forgetting).</p>
+<hr>
+<h2>3. Thiết Kế và Triển Khai Thực Nghiệm</h2>
+<h3>3.1 Exercise 1: Inference với Pretrained Sentiment Model</h3>
+<p>- <strong>File thực thi:</strong> <code>src/01_sentiment_analysis.py</code></p>
+<p>- <strong>Model sử dụng:</strong> <code>distilbert/distilbert-base-uncased-finetuned-sst-2-english</code> (mô hình đã fine-tune sẵn trên bộ dữ liệu SST-2).</p>
+<p><strong>Các bước triển khai:</strong></p>
+<p>1. <strong>Khởi tạo pipeline:</strong> Gọi <code>pipeline("sentiment-analysis")</code> để phân loại nhanh văn bản đầu vào.</p>
+<p>2. <strong>Kiểm tra Tokenizer:</strong> Xuất danh sách token, input IDs, attention mask và bảng đối chiếu token–ID.</p>
+<p>3. <strong>Tính toán thủ công (Manual Inference):</strong></p>
+<p>- Đưa tensor qua mô hình để lấy logits thô: $\mathbf{z} \in \mathbb{R}^{1 \times 2}$.</p>
+<p>- Chuyển đổi logits sang xác suất phần trăm bằng hàm Softmax:</p>
+<p>$$P(y = c \mid x) = \frac{e^{z_c}}{\sum_{j} e^{z_j}}$$</p>
+<p>- So khớp kết quả tính tay với đầu ra của pipeline để kiểm tra tính nhất quán.</p>
+<p>4. <strong>Kiểm thử đa trường hợp:</strong> Chạy thử nghiệm trên 5 mẫu câu gồm câu khen trực diện, câu chê, phủ định kép và câu châm biếm.</p>
+<hr>
+<h3>3.2 Exercise 2: Fine-tuning DistilBERT trên IMDb</h3>
+<p>- <strong>File thực thi:</strong> <code>src/02_train_finetune.py</code></p>
+<h4>3.2.1 Phân chia dữ liệu (Đảm bảo không rò rỉ)</h4>
+<pre><code class='language-'>
+Dataset gốc IMDb
+├── dataset["train"]  (25,000 reviews, shuffle seed=42)
+│   ├── → small_train_dataset : 800 mẫu (408 NEG, 392 POS)
+│   └── → small_val_dataset   : 200 mẫu (104 NEG, 96 POS)
+└── dataset["test"]   (25,000 reviews, shuffle seed=42)
+    └── → small_test_dataset  : 200 mẫu (104 NEG, 96 POS)
+</pre></code>
+<p>- <strong>Quy tắc phân chia dữ liệu:</strong></p>
+<p>- <strong>Tập Train (800 mẫu):</strong> Dùng để tính gradient và cập nhật trọng số mô hình.</p>
+<p>- <strong>Tập Validation (200 mẫu):</strong> Đánh giá giữa các epoch để chọn checkpoint tốt nhất.</p>
+<p>- <strong>Tập Test (200 mẫu):</strong> Tách biệt hoàn toàn, chỉ nạp vào đánh giá một lần duy nhất sau khi hoàn tất huấn luyện.</p>
+<p>- <strong>Cố định ngẫu nhiên:</strong> Sử dụng <code>seed=42</code> để đảm bảo tính tái lập 100%.</p>
+<h4>3.2.2 Cấu hình tham số & Tiến trình tối ưu hóa</h4>
+<table>
+<tr><th>Tham số cấu hình</th><th>Giá trị</th><th>Mục đích kỹ thuật</th></tr>
+<tr><td>`learning_rate`</td><td>$2 \times 10^{-5}$</td><td>Tránh phá vỡ các trọng số đã học sẵn (Catastrophic Forgetting)</td></tr>
+<tr><td>`per_device_train_batch_size`</td><td>$16$</td><td>Cân đối giữa bộ nhớ RAM và độ ổn định của gradient</td></tr>
+<tr><td>`num_train_epochs`</td><td>$2$ (100 steps)</td><td>Thiết lập thực nghiệm minh họa trên CPU, kiểm chứng sự thích nghi nhanh của mô hình</td></tr>
+<tr><td>`weight_decay`</td><td>$0.01$</td><td>Chuẩn hóa L2 để kiểm soát độ lớn trọng số</td></tr>
+<tr><td>`max_length`</td><td>$128$ tokens</td><td>Tối ưu hóa thời gian tính toán trên CPU</td></tr>
+<tr><td>`seed`</td><td>$42$</td><td>Đảm bảo tính minh bạch học thuật và khả năng kiểm toán tái lập (Auditability)</td></tr>
+<tr><td>`eval_strategy`</td><td>`"epoch"`</td><td>Đánh giá sau mỗi vòng lặp hoàn chỉnh</td></tr>
+<tr><td>`metric_for_best_model`</td><td>`"accuracy"`</td><td>Tiêu chí lựa chọn model tối ưu</td></tr>
+<tr><td>`load_best_model_at_end`</td><td>`True`</td><td>Tự động khóa checkpoint có độ chính xác cao nhất</td></tr>
+</table>
+<p><strong>Nhật ký tiến trình huấn luyện:</strong></p>
+<table>
+<tr><th>Epoch</th><th>Optimization Step</th><th>Training Loss</th><th>Validation Loss</th><th>Validation Accuracy (%)</th><th>Đánh giá trạng thái</th></tr>
+<tr><td>0 (Untrained)</td><td>0</td><td>—</td><td>0.6974</td><td>44.00%</td><td>Phân loại ngẫu nhiên ban đầu</td></tr>
+<tr><td>Epoch 1</td><td>50</td><td>0.6155</td><td>0.5998</td><td>69.50%</td><td>Mô hình bắt đầu học nhanh</td></tr>
+<tr><td>**Epoch 2 (Best)**</td><td>**100**</td><td>**0.5032**</td><td>**0.5118**</td><td>**76.50%**</td><td>**Đạt đỉnh Val Accuracy (Checkpoint tốt nhất)**</td></tr>
+</table>
+<p>- <strong>Kết quả lựa chọn model:</strong> Checkpoint tại Step 100 đạt Validation Accuracy cao nhất (76.50%), tự động lưu vào thư mục <code>outputs/final_model/</code> để đánh giá trên tập Test.</p>
+<h4>3.2.3 Quy trình 7 bước Fine-tuning chuẩn</h4>
+<table>
+<tr><th>Bước</th><th>Tên bước</th><th>Nội dung triển khai</th></tr>
+<tr><td>**1**</td><td>Chuẩn bị môi trường</td><td>Cài đặt và kiểm tra các thư viện `transformers`, `datasets`, `evaluate`, `torch`, `scipy`.</td></tr>
+<tr><td>**2**</td><td>Xử lý dữ liệu</td><td>Tải bộ dữ liệu `stanfordnlp/imdb`, xáo trộn (`seed=42`) và chia tập Train/Val/Test (chống rò rỉ dữ liệu).</td></tr>
+<tr><td>**3**</td><td>Khởi tạo mô hình</td><td>Nạp backbone `distilbert-base-uncased`, khởi tạo Classification Head 2 lớp nhãn.</td></tr>
+<tr><td>**4**</td><td>Tiền xử lý token</td><td>Tokenize văn bản và tích hợp bộ đệm động `DataCollatorWithPadding` (đo độ dài trên Train Set).</td></tr>
+<tr><td>**5**</td><td>Thiết lập cấu hình</td><td>Khai báo `TrainingArguments` (epoch, learning rate, batch size, checkpoint strategy).</td></tr>
+<tr><td>**6**</td><td>Thực thi huấn luyện</td><td>Huấn luyện qua `Trainer`, đo baseline ban đầu trên Val (bảo vệ Test) và lưu Best Checkpoint vào `outputs/final_model/`.</td></tr>
+<tr><td>**7**</td><td>Đánh giá tổng quát</td><td>Đánh giá trên tập Test: đo Accuracy, F1, xuất Confusion Matrix và phân tích lỗi sai.</td></tr>
+</table>
+<h4>3.2.4 Cấu trúc thư mục và phân bố tài nguyên dự án (Folder Structure)</h4>
+<p>Toàn bộ hệ thống mã nguồn, tài liệu, notebook và tài sản thực nghiệm được quy hoạch theo chuẩn kiến trúc mô-đun hóa, phân tách minh bạch giữa mã nguồn, tệp trung gian và kết quả đầu ra:</p>
+<pre><code class='language-text'>
+DL_lab3/
+├── .gitignore                              # Quy tắc loại trừ tệp nhị phân lớn (*.safetensors, *.pt), checkpoints và cache
+├── README.md                               # Tài liệu tổng quan dự án, hướng dẫn cài đặt và vận hành
+├── REPORT.md                               # Báo cáo học thuật chi tiết 8 chương về quá trình thực nghiệm
+├── RULES.md                                # Quy chuẩn dự án: Khoa học dữ liệu, Kỹ thuật phần mềm & Chuẩn ngôn ngữ
+├── requirements.txt                        # Danh sách phụ thuộc: transformers, datasets, evaluate, torch, scikit-learn
+├── docs/                                   # Hệ thống tài liệu kỹ thuật chuyên đề
+│   ├── AUDIT_LOG.md                        # Nhật ký kiểm toán 5 giai đoạn, đối soát dữ liệu và phân xử P0/P1
+│   ├── data.md                             # Báo cáo phân tích dữ liệu IMDb, phân phối nhãn, độ dài và PCA 2D
+│   ├── demo.md                             # Hướng dẫn chạy thử nghiệm suy luận dòng lệnh CLI (Inference Demo)
+│   ├── evaluation.md                       # Đặc tả đánh giá định lượng, ma trận nhầm lẫn và kiểm định thống kê
+│   ├── labs3-description.md                # Đặc tả toàn diện đề bài Practice 3 và kiến trúc giải pháp
+│   ├── model.md                            # Đặc tả kiến trúc DistilBERT, cơ chế Attention và Fine-tuning Head
+│   ├── plan-progress-status.md             # Kế hoạch chi tiết, tiến độ các giai đoạn và trạng thái kiểm định
+│   ├── REPORT.md                           # Bản sao lưu trữ báo cáo kỹ thuật dự án trong thư mục docs
+│   └── training.md                         # Báo cáo tiến trình huấn luyện, đường cong hàm mất mát và tối ưu hóa
+├── notebooks/                              # Thư mục thực thi Jupyter Notebook
+│   ├── Practice3_HuggingFace_Final.ipynb   # Notebook thực hành chính — 41 cells chuẩn hóa, trực quan hóa đầy đủ
+│   └── Practice3_HuggingFace_Final.html    # Bản kết xuất tĩnh HTML từ notebook để xem nhanh trên trình duyệt
+├── outputs/                                # Thư mục chứa kết quả thực nghiệm và tài sản xuất bản
+│   ├── REPORT.html                         # Báo cáo độc lập HTML chuẩn xuất bản, nhúng trực tiếp 10 hình ảnh/bảng
+│   ├── REPORT.md                           # Bản sao báo cáo thực hành đồng bộ với thư mục gốc
+│   ├── checkpoints/                        # Checkpoints lưu trong quá trình huấn luyện (loại trừ khỏi Git)
+│   │   ├── checkpoint-50/                  # Trọng số và trạng thái optimizer tại Step 50 (Epoch 1)
+│   │   └── checkpoint-100/                 # Trọng số và trạng thái optimizer tại Step 100 (Epoch 2)
+│   ├── final_model/                        # Mô hình tối ưu được lựa chọn sau huấn luyện (loại trừ khỏi Git)
+│   │   ├── config.json                     # Cấu hình mô hình DistilBERT num_labels=2
+│   │   ├── model.safetensors               # Trọng số mô hình định dạng SafeTensors an toàn (255.43 MB)
+│   │   ├── special_tokens_map.json         # Ánh xạ các token đặc biệt ([CLS], [SEP], [UNK], [PAD], [MASK])
+│   │   ├── tokenizer.json                  # Từ điển tokenizer định dạng JSON
+│   │   ├── tokenizer_config.json           # Cấu hình tiền xử lý tokenizer
+│   │   ├── training_args.bin               # Tham số huấn luyện nhị phân của Hugging Face Trainer
+│   │   └── vocab.txt                       # Bộ từ vựng WordPiece (30,522 tokens)
+│   └── reports/                            # 20 tệp báo cáo số liệu thực nghiệm, manifests và biểu đồ đồ họa
+│       ├── classification_report.csv       # Bảng chi tiết Precision, Recall, F1-score và Support từng lớp
+│       ├── confusion_matrix.csv            # Ma trận nhầm lẫn dạng bảng: TN=84, FP=20, FN=31, TP=65
+│       ├── confusion_matrix.png            # Biểu đồ nhiệt ma trận nhầm lẫn trên tập Test Set (200 mẫu)
+│       ├── data_label_distribution.png     # Biểu đồ cột phân phối nhãn cân bằng giữa các phân vùng dữ liệu
+│       ├── data_manifest.csv               # Danh mục chi tiết 1,200 mẫu kèm split, label, độ dài và hash MD5
+│       ├── data_manifest.json              # Siêu dữ liệu phân vùng, tỷ lệ nhãn và kiểm chứng Zero Overlap
+│       ├── data_token_length_distribution.png # Biểu đồ tần suất phân bố độ dài token và ngưỡng cắt 128
+│       ├── eda_distribution.png            # Đồ thị tổng hợp EDA khám phá dữ liệu (nhãn & độ dài câu)
+│       ├── error_analysis.csv              # Danh sách chi tiết 51 ca dự đoán sai kèm logits, xác suất và văn bản
+│       ├── final_metrics.json              # Tổng hợp chỉ số hiệu năng thực nghiệm, baselines và kiểm định
+│       ├── pca_2d_distribution.png         # Biểu đồ không gian tiềm ẩn PCA 2 chiều phân cụm đặc trưng ngữ nghĩa
+│       ├── predictions.csv                 # Toàn bộ 200 mẫu Test kèm logits, xác suất, confidence và kết quả
+│       ├── run_manifest.json               # Mã băm SHA-256 toàn bộ artifacts, thông số môi trường và phiên bản thư viện
+│       ├── table_benchmark_metrics.png     # Bảng hình ảnh đối chiếu hiệu năng giữa Baselines và Fine-tuned
+│       ├── table_classification_report.png # Bảng hình ảnh báo cáo phân loại chi tiết từng lớp
+│       ├── table_data_split.png            # Bảng hình ảnh quy cách phân chia dữ liệu Train/Val/Test
+│       ├── table_error_analysis.png        # Bảng hình ảnh tổng hợp 5 ca dự đoán sai có độ tự tin cao nhất
+│       ├── table_training_progress.png     # Bảng hình ảnh tiến trình tối ưu hóa qua các bước huấn luyện
+│       ├── test_comparison_and_per_class.png # Biểu đồ cột so sánh Baseline vs Fine-tuned và chỉ số từng lớp
+│       └── training_curves.png             # Đồ thị đường cong Training/Validation Loss và Validation Accuracy
+└── src/                                    # Mã nguồn phát triển hệ thống pipeline (9 scripts mô-đun hóa)
+    ├── 01_sentiment_analysis.py            # Bài 1: Phân tích cảm xúc với Pretrained Model SST-2, so sánh Softmax
+    ├── 02_train_finetune.py                # Bài 2: Quy trình 7 bước Fine-tuning DistilBERT trên IMDb, cô lập Test Set
+    ├── 03_predict_finetuned.py             # Script CLI nạp Checkpoint đã lưu để dự đoán cảm xúc câu văn bản mới
+    ├── export_tables_as_images.py          # Tự động xuất 5 bảng số liệu định lượng thành tệp hình ảnh PNG
+    ├── generate_data_charts.py             # Sinh biểu đồ phân tích dữ liệu (Label Distribution, Token Length, PCA)
+    ├── generate_dynamic_plots.py           # Sinh đồ thị thực nghiệm (Confusion Matrix, Test Comparison, Curves)
+    ├── generate_html_report.py             # Tạo báo cáo độc lập REPORT.html nhúng toàn bộ biểu đồ và bảng PNG
+    ├── pipeline_utils.py                   # Thư viện tiện ích dùng chung: phân chia dữ liệu, manifests, tính metrics
+    └── verify_all.py                       # Bộ kiểm thử hồi quy tự động 5 pha kiểm tra toàn vẹn toàn diện hệ thống
+</pre></code>
+<hr>
+<h2>4. Kết Quả Định Lượng</h2>
+<blockquote>**Nguồn số liệu:** Trích xuất tự động và nguyên văn từ file nhật ký `outputs/reports/final_metrics.json`.</blockquote>
+<h3>4.1 So sánh Baseline vs. Fine-tuned</h3>
+<table>
+<tr><th>Chỉ số kiểm thử</th><th>Untrained Baseline (Val)</th><th>Majority-Class (Test)</th><th>Fine-tuned DistilBERT (Test)</th><th>Mức tăng trưởng (+ Gain)</th></tr>
+<tr><td>**Accuracy (Độ chính xác)**</td><td>44.00%</td><td>52.00%</td><td>**74.50%**</td><td>**+22.50%** (vs Majority trên Test)<br>**+32.50%** (Untrained Val → Best Val)<br>**+30.50%** (vs Untrained Val - Tham chiếu chéo)</td></tr>
+<tr><td>**Khoảng tin cậy 95% (Wilson)**</td><td>—</td><td>—</td><td>**[68.04%, 80.04%]**</td><td>—</td></tr>
+<tr><td>**Macro F1-Score**</td><td>—</td><td>—</td><td>**74.27%**</td><td>—</td></tr>
+<tr><td>**Macro Precision**</td><td>—</td><td>—</td><td>**74.76%**</td><td>—</td></tr>
+<tr><td>**Macro Recall**</td><td>—</td><td>—</td><td>**74.24%**</td><td>—</td></tr>
+<tr><td>**Test Loss (Cross-Entropy)**</td><td>—</td><td>—</td><td>**0.5565**</td><td>—</td></tr>
+<tr><td>**Thời gian huấn luyện**</td><td>—</td><td>—</td><td>**391.42s (~6.52 phút trên CPU)**</td><td>—</td></tr>
+</table>
+<p><strong>Phân tích đối chứng:</strong></p>
+<p>- <strong>Untrained Baseline (44.00%):</strong> Đo lường trên tập Validation khi các tầng phân loại trên cùng chưa học (khởi tạo ngẫu nhiên). Sau 2 epoch tinh chỉnh, Validation Accuracy đạt 76.50% (+32.50% trên cùng tập Validation).</p>
+<p>- <strong>Majority-Class Baseline (52.00%):</strong> Mức độ chính xác nếu áp dụng quy tắc đa số học từ Train (chiếm 51.0%) lên tập Test (ngẫu nhiên chiếm 52.0% <code>NEGATIVE</code>).</p>
+<p>- <strong>Fine-tuned DistilBERT (74.50%):</strong> Đạt 149/200 mẫu đoán đúng, vượt mốc phỏng đoán đa số <strong>+22.50%</strong>, chứng minh mô hình thực sự học được đặc trưng cảm xúc.</p>
+<p>- <strong>Khoảng tin cậy Wilson 95%:</strong> Với cỡ mẫu test 200, hiệu năng thực tế nằm chắc chắn trong dải $[68.04\%, 80.04\%]$.</p>
+<h3>4.2 Báo cáo Phân loại Chi tiết (Per-class Metrics)</h3>
+<table>
+<tr><th>Lớp nhãn</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Số mẫu thực tế (Support)</th></tr>
+<tr><td>**NEGATIVE (0)**</td><td>73.04%</td><td>80.77%</td><td>**76.71%**</td><td>104 mẫu</td></tr>
+<tr><td>**POSITIVE (1)**</td><td>76.47%</td><td>67.71%</td><td>**71.82%**</td><td>96 mẫu</td></tr>
+<tr><td>**Macro Average**</td><td>**74.76%**</td><td>**74.24%**</td><td>**74.27%**</td><td>200 mẫu</td></tr>
+<tr><td>**Overall Accuracy**</td><td>—</td><td>—</td><td>**74.50%**</td><td>200 mẫu</td></tr>
+</table>
+<p>- <strong>Nhận xét hiệu năng từng lớp:</strong></p>
+<p>- Lớp <code>NEGATIVE</code>: Đạt Recall cao (80.77%), phát hiện các bài chê rất nhạy và ít bị bỏ sót.</p>
+<p>- Lớp <code>POSITIVE</code>: Đạt Precision cao (76.47%), khi mô hình dự đoán là tích cực thì độ tin cậy rất cao.</p>
+<p>- Cân bằng tổng thể: Điểm Macro F1 đạt 74.27%, thể hiện mô hình không bị lệch về một phía.</p>
+<h3>4.3 Ma trận Nhầm lẫn (Confusion Matrix)</h3>
+<table>
+<tr><th>Thực tế \ Dự đoán</th><th>Dự đoán NEGATIVE (0)</th><th>Dự đoán POSITIVE (1)</th></tr>
+<tr><td>**Thực tế NEGATIVE (104)**</td><td>**TN = 84** (42.0%)</td><td>FP = 20 (10.0%)</td></tr>
+<tr><td>**Thực tế POSITIVE (96)**</td><td>FN = 31 (15.5%)</td><td>**TP = 65** (32.5%)</td></tr>
+</table>
+<p>- <strong>True Negative (TN = 84):</strong> 84 bài đánh giá tiêu cực được đoán đúng.</p>
+<p>- <strong>True Positive (TP = 65):</strong> 65 bài đánh giá tích cực được đoán đúng.</p>
+<p>- <strong>False Positive (FP = 20):</strong> 20 bài tiêu cực bị đoán nhầm thành tích cực.</p>
+<p>- <strong>False Negative (FN = 31):</strong> 31 bài tích cực bị đoán nhầm thành tiêu cực.</p>
+<p>- <strong>Đánh giá sai số:</strong> Số ca FN (31) cao hơn FP (20) cho thấy mô hình có xu hướng thận trọng, chỉ gán nhãn POSITIVE khi bằng chứng từ ngữ thực sự rõ ràng.</p>
+<hr>
+<h2>5. Phân Tích Sai Số Chuyên Sâu (Error Analysis)</h2>
+<p>Dữ liệu phân tích lấy từ file <code>outputs/reports/error_analysis.csv</code> ghi nhận 51 ca dự đoán sai trên tập Test. Các nguyên nhân lỗi chính gồm:</p>
+<h3>5.1 Cảm xúc phức tạp và Trộn lẫn (Mixed Sentiment)</h3>
+<p>- <strong>Ca kiểm thử điển hình (Index 180 — Độ dài: 105 tokens, không bị cắt):</strong></p>
+<blockquote>*"not really sure what to make of this movie. very weird, very artsy. not the kind of movie you watch because it has a compelling plot or characters. more like the kind of movie that you can't stop watching because of the horrifically fascinating things happening on screen. although, the first time my wife watched this she couldn't make it all the way through... too disturbing for her. runs a bit long, but nonetheless a worthwhile viewing for those interested in very dark movies."*</blockquote>
+<p>- <strong>Nhãn thật:</strong> POSITIVE → <strong>Mô hình đoán:</strong> NEGATIVE (độ tự tin <strong>80.23%</strong>)</p>
+<p>- <strong>Nguyên nhân lỗi:</strong> Văn bản xuất hiện nhiều từ mang sắc thái u ám bề mặt (<em>weird, horrifically, disturbing, dark</em>), làm át đi câu kết luận khen ngợi ở cuối (<em>"nonetheless a worthwhile viewing"</em>).</p>
+<h3>5.2 Ngữ cảnh cá nhân tương phản (Contextual Confounding)</h3>
+<p>- <strong>Ca kiểm thử điển hình (Index 88):</strong></p>
+<blockquote>*"i was having a horrid day but this movie grabbed me, and i couldn't put it down until the end... and i had forgotten about my horrid day."*</blockquote>
+<p>- <strong>Nhãn thật:</strong> POSITIVE → <strong>Mô hình đoán:</strong> NEGATIVE (độ tự tin <strong>82.04%</strong>)</p>
+<p>- <strong>Nguyên nhân lỗi:</strong> Từ tiêu cực (<em>horrid day</em>) phản ánh tâm trạng cá nhân của người xem trước khi xem phim, không phải đánh giá chất lượng phim. Mô hình chưa tách biệt được ngữ cảnh người xem và nội dung tác phẩm.</p>
+<h3>5.3 Lời khen theo lối mỉa mai / trào phúng (Sarcasm & Cult-movie)</h3>
+<p>- <strong>Ca kiểm thử điển hình (Index 103 — Độ dài: 77 tokens, không bị cắt):</strong></p>
+<blockquote>*"Great cult flick for MST-3K types: Richard Boone is a mess -- bad hair, arthritis, even his dark glasses aren't right; about as good as a bad dino-flick can get... actually, that charging saber-toothed Styracosaurus was pretty cool -- maybe Spielberg should take a couple of notes from that one."*</blockquote>
+<p>- <strong>Nhãn thật:</strong> POSITIVE → <strong>Mô hình đoán:</strong> NEGATIVE (độ tự tin <strong>76.10%</strong>)</p>
+<p>- <strong>Nguyên nhân lỗi:</strong> Người xem đánh giá theo phong cách châm biếm phim hạng B, cố tình liệt kê các điểm dở (<em>bad hair, bad dino-flick</em>) như một nét cuốn hút riêng. Mô hình bị đánh lừa bởi chuỗi từ ngữ chê bai bề mặt.</p>
+<h3>5.4 Tác động của việc cắt ngắn token (Truncation Analysis)</h3>
+<p>Thống kê thực tế trên 200 mẫu kiểm thử:</p>
+<table>
+<tr><th>Nhóm phân loại</th><th>Số lượng mẫu</th><th>Số ca đoán sai</th><th>Tỷ lệ lỗi (%)</th><th>Độ chính xác (%)</th><th>Wilson 95% CI</th></tr>
+<tr><td>**Không bị cắt ($\le 128$ tokens)**</td><td>28 mẫu (14.0%)</td><td>6 mẫu</td><td>**21.43%**</td><td>**78.57%**</td><td>[10.2%, 39.5%]</td></tr>
+<tr><td>**Bị cắt ngắn ($> 128$ tokens)**</td><td>172 mẫu (86.0%)</td><td>45 mẫu</td><td>**26.16%**</td><td>**73.84%**</td><td>[20.2%, 33.2%]</td></tr>
+<tr><td>**Toàn bộ Test Set (200 mẫu)**</td><td>200 mẫu (100%)</td><td>51 mẫu</td><td>**25.50%**</td><td>**74.50%**</td><td>[19.9%, 32.0%]</td></tr>
+</table>
+<p>- <strong>Kết luận:</strong> Tỷ lệ lỗi giữa nhóm bị cắt (26.16%) và nhóm không bị cắt (21.43%) không có sự khác biệt mang ý nghĩa thống kê (Kiểm định Fisher: Odds Ratio = $0.7697$, $p\text{-value} = 0.8153 > 0.05$). Việc giới hạn 128 tokens không phải nguyên nhân chính gây lỗi, mà lỗi chủ yếu do cấu trúc ngữ nghĩa phức tạp của câu.</p>
+<hr>
+<h2>6. Thảo Luận Kỹ Thuật</h2>
+<h3>6.1 So sánh hai phương pháp</h3>
+<table>
+<tr><th>Tiêu chí so sánh</th><th>Pretrained sẵn (Exercise 1)</th><th>Fine-tuned trên tập mới (Exercise 2)</th></tr>
+<tr><td>**Yêu cầu dữ liệu nhãn**</td><td>Không cần</td><td>Cần tập train có nhãn (800 mẫu)</td></tr>
+<tr><td>**Thời gian triển khai**</td><td>Dưới 1 phút</td><td>391.42s (~6.52 phút trên CPU)</td></tr>
+<tr><td>**Khả năng thích ứng nghiệp vụ**</td><td>Cố định theo domain cũ</td><td>Thích nghi trực tiếp theo domain mới</td></tr>
+<tr><td>**Kiểm soát nhãn đầu ra**</td><td>Giới hạn theo model gốc</td><td>Tùy biến linh hoạt theo bài toán</td></tr>
+</table>
+<h3>6.2 Hạn chế hiện tại & Phương án nâng cấp</h3>
+<table>
+<tr><th>Hạn chế</th><th>Nguyên nhân chính</th><th>Hướng giải quyết đề xuất</th></tr>
+<tr><td>**Độ chính xác 74.50%**</td><td>Cỡ mẫu train nhỏ (800 mẫu), chạy 2 epochs</td><td>Tăng dữ liệu lên 5.000–25.000 mẫu và train trên GPU</td></tr>
+<tr><td>**Cắt ngắn tại 128 tokens**</td><td>Giới hạn bộ nhớ CPU</td><td>Nâng `max_length` lên 256/512 hoặc dùng Longformer</td></tr>
+<tr><td>**Nhầm lẫn câu mỉa mai**</td><td>Mô hình chưa học sâu về ngữ cảnh tương phản</td><td>Bổ sung dữ liệu văn phong sarcasm và fine-tune thêm</td></tr>
+</table>
+<hr>
+<h2>7. Kết Luận</h2>
+<p>Dự án đã đáp ứng đầy đủ và vượt chuẩn các yêu cầu kỹ thuật của <strong>Practice 3</strong>:</p>
+<p>- <strong>Exercise 1:</strong> Làm chủ quy trình suy luận của Hugging Face, giải mã Tokenizer WordPiece và thực hiện tính tay xác suất từ logits qua Softmax đạt độ khớp 100%.</p>
+<p>- <strong>Exercise 2:</strong> Fine-tuning DistilBERT đạt kết quả tốt trên CPU: Độ chính xác tăng từ <strong>44.00% (Untrained Val) lên 74.50% (Test)</strong> (+30.50% tham chiếu chéo, +32.50% trên cùng tập Val), Macro F1 đạt <strong>74.27%</strong>, vượt mốc phỏng đoán đa số <strong>+22.50%</strong>. Model checkpoints được tự động khóa ở thời điểm tối ưu (Epoch 2, 76.50% Val Accuracy).</p>
+<p>Toàn bộ hệ thống kiểm thử tự động, dữ liệu đầu ra và mã nguồn đã được đồng bộ tuyệt đối và có thể tái tạo nhanh qua lệnh:</p>
+<pre><code class='language-bash'>
+python src/02_train_finetune.py
+python src/verify_all.py
+</pre></code>
+<hr>
+<h2>8. Tài Liệu Tham Khảo</h2>
+<p>1. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). <strong>Attention is all you need.</strong> <em>Advances in Neural Information Processing Systems</em>, 30. https://arxiv.org/abs/1706.03762</p>
+<p>2. Sanh, V., Debut, L., Chaumond, J., & Wolf, T. (2019). <strong>DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter.</strong> <em>arXiv preprint arXiv:1910.01108</em>. https://arxiv.org/abs/1910.01108</p>
+<p>3. Devlin, J., Chang, M.-W., Lee, K., & Toutanova, K. (2019). <strong>BERT: Pre-training of deep bidirectional transformers for language understanding.</strong> <em>Proceedings of NAACL-HLT 2019</em>, 4171–4186. https://arxiv.org/abs/1810.04805</p>
+<p>4. Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011). <strong>Learning word vectors for sentiment analysis.</strong> <em>Proceedings of ACL</em>, 142–150. https://aclanthology.org/P11-1015</p>
+<p>5. Wolf, T., Debut, L., Sanh, V., Chaumond, J., Delangue, C., Moi, A., Cistac, P., Rault, T., Louf, R., Funtowicz, M., & Rush, A. M. (2020). <strong>Transformers: State-of-the-art natural language processing.</strong> <em>Proceedings of EMNLP 2020 (System Demonstrations)</em>, 38–45. https://arxiv.org/abs/1910.03771</p>
+<p>6. Schick, T., & Schütze, H. (2021). <strong>It's not just size that matters: Small language models are also few-shot learners.</strong> <em>Proceedings of EACL 2021</em>, 2339–2352. https://arxiv.org/abs/2009.07118</p>
+<hr>
+<p><em>Báo cáo kỹ thuật được trích xuất trực tiếp từ các tệp nhật ký thực thi tại <code>outputs/reports/</code>. Toàn bộ chỉ số định lượng có thể kiểm chứng tại <code>outputs/reports/final_metrics.json</code>.</em></p>
+
+<hr>
+<h2>8. BỘ BIỂU ĐỒ THỰC NGHIỆM CHÍNH THỨC CỦA DỰ ÁN (OUTPUTS/REPORTS/)</h2>
+<p>Toàn bộ 5 biểu đồ đồ họa phân tích thực nghiệm được lưu tại thư mục <code>outputs/reports/</code>:</p>
+
+<div class='figure-box'><img src='reports/training_curves.png' alt='Đường cong huấn luyện'><p class='caption'><b>Biểu đồ 1:</b> Đường cong mất mát Loss &amp; Validation Accuracy qua 100 steps (Khớp Cell 27 Notebook)</p></div>
+<div class='figure-box'><img src='reports/confusion_matrix.png' alt='Ma trận nhầm lẫn'><p class='caption'><b>Biểu đồ 2:</b> Biểu đồ nhiệt Ma trận nhầm lẫn Confusion Matrix (Khớp Cell 34 Notebook)</p></div>
+<div class='figure-box'><img src='reports/test_comparison_and_per_class.png' alt='So sánh hiệu năng'><p class='caption'><b>Biểu đồ 3:</b> So sánh hiệu năng Test Set &amp; chỉ số từng lớp (Khớp Cell 33 Notebook)</p></div>
+<div class='figure-box'><img src='reports/eda_distribution.png' alt='Khám phá dữ liệu EDA kèm PCA'><p class='caption'><b>Biểu đồ 4:</b> Khám phá dữ liệu EDA 3 cột: Phân bố nhãn, Phân phối độ dài Token &amp; PCA 2D Không gian dữ liệu thô (Khớp 100% Cell 15 Notebook)</p></div>
+<div class='figure-box'><img src='reports/pca_2d_distribution.png' alt='Biểu đồ PCA 2D phóng to'><p class='caption'><b>Biểu đồ 5:</b> Phân tích chuyên sâu không gian vector ngữ nghĩa TF-IDF qua PCA 2D (Độ chồng lấn dữ liệu thô)</p></div>
+
+<hr>
+<h2>9. BẢNG BIỂU TỔNG HỢP KẾT QUẢ THỰC NGHIỆM (OUTPUTS/REPORTS/)</h2>
+<p>Toàn bộ 5 bảng số liệu tổng hợp được kết xuất trực tiếp dưới dạng ảnh chất lượng cao:</p>
+
+<div class='figure-box'><img src='reports/table_data_split.png' alt='Bảng phân chia dữ liệu'><p class='caption'><b>Bảng 1:</b> Phân chia dữ liệu Train/Validation/Test Set (Chống rò rỉ)</p></div>
+<div class='figure-box'><img src='reports/table_training_progress.png' alt='Bảng tiến trình huấn luyện'><p class='caption'><b>Bảng 2:</b> Tiến trình tối ưu hóa qua từng Epoch &amp; Step</p></div>
+<div class='figure-box'><img src='reports/table_classification_report.png' alt='Bảng Classification Report'><p class='caption'><b>Bảng 3:</b> Báo cáo phân loại chi tiết từng lớp (Per-class Metrics)</p></div>
+<div class='figure-box'><img src='reports/table_benchmark_metrics.png' alt='Bảng đối chiếu hiệu năng'><p class='caption'><b>Bảng 4:</b> Đối chiếu hiệu năng Baseline vs Fine-tuned DistilBERT</p></div>
+<div class='figure-box'><img src='reports/table_error_analysis.png' alt='Bảng phân tích cắt cụt token'><p class='caption'><b>Bảng 5:</b> Phân tích tỷ lệ sai số theo mức độ cắt cụt token &amp; Kiểm định Fisher</p></div>
+
+</body>
+</html>

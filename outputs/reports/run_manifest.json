@@ -1,0 +1,45 @@
+{
+  "timestamp_utc": "2026-11-11T03:21:53.841256+00:00",
+  "environment": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python_version": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+    "torch_version": "2.15.0+cpu",
+    "transformers_version": "4.56.0",
+    "cpu_count": 16,
+    "cuda_available": false
+  },
+  "experiment_configuration": {
+    "task": "IMDb Binary Sentiment Analysis",
+    "base_model": "distilbert/distilbert-base-uncased",
+    "architecture": "DistilBertForSequenceClassification",
+    "num_labels": 2,
+    "seed": 42,
+    "learning_rate": 2e-05,
+    "num_train_epochs": 2,
+    "per_device_train_batch_size": 16,
+    "per_device_eval_batch_size": 16,
+    "weight_decay": 0.01,
+    "metric_for_best_model": "accuracy",
+    "load_best_model_at_end": true,
+    "max_length": 128
+  },
+  "artifact_hashes_sha256": {
+    "model_safetensors": "82907cd48c30bfcf767ff2c469f83da3a87d060159a06e839c542c1782de8b28",
+    "predictions_csv": "38f022bf1f3b6762678085d34bc77823658c2de8b522f2dd75b070c179de9536",
+    "data_manifest_json": "3aea4e267fc3611cff4af383b380dbcf24e9c3f6009f95b0eb354ac85f8c4cc1",
+    "final_metrics_json": "de060b9523fac578ec13fe990cad7b88d62e293bca41057a27c092bee46a438e"
+  },
+  "summary_metrics": {
+    "test_accuracy": 74.5,
+    "test_macro_f1": 74.2678,
+    "test_loss": 0.5565,
+    "correct_predictions": 149,
+    "total_samples": 200,
+    "majority_baseline": 52.0,
+    "untrained_head_val_baseline": 44.0,
+    "wilson_95_ci": [
+      68.036949,
+      80.039597
+    ]
+  }
+}
