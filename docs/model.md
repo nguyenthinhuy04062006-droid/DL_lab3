@@ -114,6 +114,49 @@ Tài liệu kỹ thuật đặc tả chi tiết kiến trúc mô hình, nguồn 
 [Softmax / Argmax] ──> [Nhãn: 0: NEGATIVE, 1: POSITIVE]
 ```
 
+#### Sơ đồ kiến trúc mô hình & Luồng dữ liệu (Model Architecture Diagram):
+
+```mermaid
+flowchart TD
+    subgraph InputStage["1. Input and Tokenization Stage"]
+        A["Văn bản thô (Raw Review String)"] --> B["WordPiece Tokenizer (Vocab: 30,522 sub-words)"]
+        B --> C["input_ids: [Batch, Length] (Length <= 128)"]
+        B --> D["attention_mask: [Batch, Length] (1: Real Token, 0: PAD)"]
+    end
+
+    subgraph EmbeddingStage["2. Embeddings Layer (23,835,648 params)"]
+        C --> E1["Token Embeddings (30,522 x 768)"]
+        C --> E2["Position Embeddings (512 x 768)"]
+        D --> E3["Attention Mask Router"]
+        E1 --> E4["Sum + LayerNorm(768) + Dropout(p=0.1)"]
+        E2 --> E4
+    end
+
+    subgraph TransformerEncoder["3. Transformer Encoder (6 Blocks - 42,527,232 params)"]
+        E4 --> TB0["Block 0: Multi-Head Self-Attention (12 heads, d_k=64) + FFN(3072)"]
+        TB0 --> TB1["Block 1: Multi-Head Self-Attention + FFN"]
+        TB1 --> TB2["Block 2: Multi-Head Self-Attention + FFN"]
+        TB2 --> TB3["Block 3: Multi-Head Self-Attention + FFN"]
+        TB3 --> TB4["Block 4: Multi-Head Self-Attention + FFN"]
+        TB4 --> TB5["Block 5: Multi-Head Self-Attention + FFN"]
+    end
+
+    subgraph ClassificationHead["4. Classification Head (592,130 params)"]
+        TB5 --> CLS["Trích xuất vector [CLS]: hidden_state[:, 0, :] in R^(B x 768)"]
+        CLS --> PRE["pre_classifier: Linear(768 -> 768) + ReLU() (590,592 params)"]
+        PRE --> DROP["Dropout(p = 0.2)"]
+        DROP --> LIN["classifier: Linear(768 -> 2) (1,538 params)"]
+    end
+
+    subgraph OutputStage["5. Logits and Output Inference"]
+        LIN --> LOGITS["Raw Logits: z = [z_0, z_1] in R^(B x 2)"]
+        LOGITS --> SM["Softmax Function: P(y=c|x) = exp(z_c) / sum(exp(z))"]
+        LOGITS --> AM["Argmax Decision: y_pred = argmax(z)"]
+        SM --> CONF["Confidence Score: max(prob_neg, prob_pos)"]
+        AM --> PRED["Predicted Label: 0 (NEGATIVE) / 1 (POSITIVE)"]
+    end
+```
+
 1. **Tầng Embeddings (23.835.648 tham số):**
    - *Word Embeddings:* Bảng tra cứu từ vựng kích thước $30.522 \times 768 = 23.440.896$ tham số.
    - *Position Embeddings:* Bảng vị trí token $512 \times 768 = 393.216$ tham số (DistilBERT loại bỏ Segment Embeddings của BERT để tinh giản cấu trúc).
@@ -167,6 +210,56 @@ Tài liệu kỹ thuật đặc tả chi tiết kiến trúc mô hình, nguồn 
 - **Tính bất khả phân tuyến tính (Linear Inseparability via PCA 2D):**
   - Phân tích 2 thành phần chính trên ma trận TF-IDF 1.000 từ cho thấy $PC1$ giải thích 0.84% và $PC2$ giải thích 0.65% phương sai (tổng cộng chỉ đạt 1.49%).
   - Các điểm dữ liệu của 2 lớp phân bố chồng lấn dày đặc tại gốc tọa độ, chứng minh các phương pháp tuyến tính truyền thống hoàn toàn bất lực và khẳng định tính tất yếu của các tầng Self-Attention phi tuyến tính sâu trong DistilBERT.
+
+### 5.6. Sơ đồ giám sát huấn luyện & kiểm định chất lượng (Training & Evaluation Monitoring Diagram)
+
+Sơ đồ đặc tả toàn diện kiến trúc giám sát (Monitoring Engine), luồng ghi nhận dữ liệu đo lường thời gian thực (Telemetry Stream), cơ chế kiểm soát hiện tượng quá khớp (Overfitting Detection) và logic tự động lưu trữ mô hình tối ưu nhất (`load_best_model_at_end`):
+
+```mermaid
+flowchart TD
+    subgraph DataFeeding["1. Dữ liệu và Phân phối Lô (Batch Feeding)"]
+        D1["Train Dataset (800 mẫu IMDb)"] --> BATCH["DataLoader và DataCollatorWithPadding (Batch size = 16)"]
+        D2["Validation Dataset (200 mẫu IMDb)"] --> VAL_BATCH["Validation Loader (Batch size = 32)"]
+    end
+
+    subgraph ForwardBackwardOptimization["2. Lan truyền và Cập nhật Trọng số (Optimization Loop)"]
+        BATCH --> FWD["Forward Pass: DistilBERT + Classification Head"]
+        FWD --> LOSS["Tính Cross-Entropy Loss"]
+        LOSS --> BACK["Backward Pass: Tính toán Gradient"]
+        BACK --> OPT["Bộ tối ưu AdamW (lr=2e-5, weight_decay=0.01)"]
+        OPT --> UPDATE["Cập nhật trọng số toàn mô hình (100 steps)"]
+    end
+
+    subgraph RealTimeMonitorEngine["3. Hệ Thống Giám Sát Thời Gian Thực (Monitoring Engine)"]
+        LOSS -.-> LOG_LOSS["Loss Logger (logging_steps=10): Ghi nhận Training Loss"]
+        VAL_BATCH -.-> EVAL_ENGINE["Evaluation Engine (eval_strategy='epoch'): Tính Val Loss, Val Accuracy"]
+        LOG_LOSS --> LOG_HIST["trainer.state.log_history (Telemetry Stream)"]
+        EVAL_ENGINE --> LOG_HIST
+        
+        LOG_HIST --> METRIC_TABLE["Bảng theo dõi tiến trình huấn luyện (Epoch 0, 1, 2)"]
+        LOG_HIST --> CURVES["Biểu đồ học tập: training_loss_curve.png, training_accuracy_curve.png"]
+    end
+
+    subgraph OverfittingAndModelSelection["4. Kiểm Soát Quá Khớp và Lựa Chọn Best Model"]
+        EVAL_ENGINE --> CHECK_DIV{"Kiểm tra phân kỳ Loss (Overfitting Check)"}
+        CHECK_DIV -->|"Val Loss giảm đồng quy: 0.6974 -> 0.5118"| HEALTHY["Hội tụ bình thường (No Overfitting)"]
+        CHECK_DIV -->|"Val Loss tăng trong khi Train Loss giảm"| WARN["Cảnh báo quá khớp (Overfitting Alert)"]
+        
+        EVAL_ENGINE --> CMP{"So sánh Val Accuracy với kỷ lục trước đó"}
+        CMP -->|"Val Acc đạt đỉnh: 76.50% tại Epoch 2"| SAVE_BEST["Checkpointing: outputs/checkpoints/checkpoint-100"]
+        CMP -->|"Val Acc thấp hơn kỷ lục"| KEEP["Bỏ qua không cập nhật Best"]
+        
+        SAVE_BEST --> LOAD_BEST["load_best_model_at_end=True: Khóa trọng số tối ưu nhất"]
+        LOAD_BEST --> EXPORT_MODEL["Lưu trữ an toàn: outputs/final_model/model.safetensors"]
+    end
+
+    subgraph IndependentVerificationAudit["5. Kiểm Định Độc Lập Sau Huấn Luyện (Test Set Audit)"]
+        EXPORT_MODEL --> TEST_EVAL["Suy luận trên Test Set độc lập (200 mẫu)"]
+        TEST_EVAL --> TEST_METRICS["Đối soát chỉ số động: Accuracy 74.50%, Macro F1 74.27%, Loss 0.5565"]
+        TEST_METRICS --> STAT_TESTS["Kiểm định thống kê: Wilson CI [68.04%, 80.04%], McNemar, Fisher"]
+        STAT_TESTS --> VERIFY_SUITE["Bộ kiểm thử tự động src/verify_all.py (5/5 tests PASSED 100%)"]
+    end
+```
 
 ---
 

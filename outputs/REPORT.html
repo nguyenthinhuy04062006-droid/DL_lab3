@@ -71,6 +71,47 @@
 <tr><td>**Tốc độ xử lý**</td><td>Chuẩn baseline</td><td>Nhanh hơn 60%</td></tr>
 <tr><td>**Hiệu năng giữ lại**</td><td>100%</td><td>> 97%</td></tr>
 </table>
+<p><strong>Sơ đồ kiến trúc DistilBERT & Sequence Classification Head:</strong></p>
+<pre><code class='language-mermaid'>
+flowchart TD
+    subgraph InputStage["1. Input and Tokenization Stage"]
+        A["Văn bản thô (Raw Review String)"] --&gt; B["WordPiece Tokenizer (Vocab: 30,522 sub-words)"]
+        B --&gt; C["input_ids: [Batch, Length] (Length &lt;= 128)"]
+        B --&gt; D["attention_mask: [Batch, Length] (1: Real Token, 0: PAD)"]
+    end
+
+    subgraph EmbeddingStage["2. Embeddings Layer (23,835,648 params)"]
+        C --&gt; E1["Token Embeddings (30,522 x 768)"]
+        C --&gt; E2["Position Embeddings (512 x 768)"]
+        D --&gt; E3["Attention Mask Router"]
+        E1 --&gt; E4["Sum + LayerNorm(768) + Dropout(p=0.1)"]
+        E2 --&gt; E4
+    end
+
+    subgraph TransformerEncoder["3. Transformer Encoder (6 Blocks - 42,527,232 params)"]
+        E4 --&gt; TB0["Block 0: Multi-Head Self-Attention (12 heads, d_k=64) + FFN(3072)"]
+        TB0 --&gt; TB1["Block 1: Multi-Head Self-Attention + FFN"]
+        TB1 --&gt; TB2["Block 2: Multi-Head Self-Attention + FFN"]
+        TB2 --&gt; TB3["Block 3: Multi-Head Self-Attention + FFN"]
+        TB3 --&gt; TB4["Block 4: Multi-Head Self-Attention + FFN"]
+        TB4 --&gt; TB5["Block 5: Multi-Head Self-Attention + FFN"]
+    end
+
+    subgraph ClassificationHead["4. Classification Head (592,130 params)"]
+        TB5 --&gt; CLS["Trích xuất vector [CLS]: hidden_state[:, 0, :] in R^(B x 768)"]
+        CLS --&gt; PRE["pre_classifier: Linear(768 -&gt; 768) + ReLU() (590,592 params)"]
+        PRE --&gt; DROP["Dropout(p = 0.2)"]
+        DROP --&gt; LIN["classifier: Linear(768 -&gt; 2) (1,538 params)"]
+    end
+
+    subgraph OutputStage["5. Logits and Output Inference"]
+        LIN --&gt; LOGITS["Raw Logits: z = [z_0, z_1] in R^(B x 2)"]
+        LOGITS --&gt; SM["Softmax Function: P(y=c|x) = exp(z_c) / sum(exp(z))"]
+        LOGITS --&gt; AM["Argmax Decision: y_pred = argmax(z)"]
+        SM --&gt; CONF["Confidence Score: max(prob_neg, prob_pos)"]
+        AM --&gt; PRED["Predicted Label: 0 (NEGATIVE) / 1 (POSITIVE)"]
+    end
+</pre></code>
 <h3>2.3 Cơ chế Tokenizer — WordPiece Sub-word</h3>
 <p>Tokenizer tách văn bản thành các đơn vị sub-word để xử lý từ vựng linh hoạt:</p>
 <p>- <strong>Từ thông dụng:</strong> Giữ nguyên từ gốc (ví dụ: <code>"movie"</code>, <code>"great"</code>).</p>
@@ -137,6 +178,52 @@ Dataset gốc IMDb
 <tr><td>**Epoch 2 (Best)**</td><td>**100**</td><td>**0.5032**</td><td>**0.5118**</td><td>**76.50%**</td><td>**Đạt đỉnh Val Accuracy (Checkpoint tốt nhất)**</td></tr>
 </table>
 <p>- <strong>Kết quả lựa chọn model:</strong> Checkpoint tại Step 100 đạt Validation Accuracy cao nhất (76.50%), tự động lưu vào thư mục <code>outputs/final_model/</code> để đánh giá trên tập Test.</p>
+<p><strong>Sơ đồ giám sát huấn luyện thời gian thực & Lựa chọn Best Model (Training Monitoring Diagram):</strong></p>
+<pre><code class='language-mermaid'>
+flowchart TD
+    subgraph DataFeeding["1. Dữ liệu và Phân phối Lô (Batch Feeding)"]
+        D1["Train Dataset (800 mẫu IMDb)"] --&gt; BATCH["DataLoader và DataCollatorWithPadding (Batch size = 16)"]
+        D2["Validation Dataset (200 mẫu IMDb)"] --&gt; VAL_BATCH["Validation Loader (Batch size = 32)"]
+    end
+
+    subgraph ForwardBackwardOptimization["2. Lan truyền và Cập nhật Trọng số (Optimization Loop)"]
+        BATCH --&gt; FWD["Forward Pass: DistilBERT + Classification Head"]
+        FWD --&gt; LOSS["Tính Cross-Entropy Loss"]
+        LOSS --&gt; BACK["Backward Pass: Tính toán Gradient"]
+        BACK --&gt; OPT["Bộ tối ưu AdamW (lr=2e-5, weight_decay=0.01)"]
+        OPT --&gt; UPDATE["Cập nhật trọng số toàn mô hình (100 steps)"]
+    end
+
+    subgraph RealTimeMonitorEngine["3. Hệ Thống Giám Sát Thời Gian Thực (Monitoring Engine)"]
+        LOSS -.-&gt; LOG_LOSS["Loss Logger (logging_steps=10): Ghi nhận Training Loss"]
+        VAL_BATCH -.-&gt; EVAL_ENGINE["Evaluation Engine (eval_strategy='epoch'): Tính Val Loss, Val Accuracy"]
+        LOG_LOSS --&gt; LOG_HIST["trainer.state.log_history (Telemetry Stream)"]
+        EVAL_ENGINE --&gt; LOG_HIST
+        
+        LOG_HIST --&gt; METRIC_TABLE["Bảng theo dõi tiến trình huấn luyện (Epoch 0, 1, 2)"]
+        LOG_HIST --&gt; CURVES["Biểu đồ học tập: training_loss_curve.png, training_accuracy_curve.png"]
+    end
+
+    subgraph OverfittingAndModelSelection["4. Kiểm Soát Quá Khớp và Lựa Chọn Best Model"]
+        EVAL_ENGINE --&gt; CHECK_DIV{"Kiểm tra phân kỳ Loss (Overfitting Check)"}
+        CHECK_DIV --&gt;|"Val Loss giảm đồng quy: 0.6974 -&gt; 0.5118"| HEALTHY["Hội tụ bình thường (No Overfitting)"]
+        CHECK_DIV --&gt;|"Val Loss tăng trong khi Train Loss giảm"| WARN["Cảnh báo quá khớp (Overfitting Alert)"]
+        
+        EVAL_ENGINE --&gt; CMP{"So sánh Val Accuracy với kỷ lục trước đó"}
+        CMP --&gt;|"Val Acc đạt đỉnh: 76.50% tại Epoch 2"| SAVE_BEST["Checkpointing: outputs/checkpoints/checkpoint-100"]
+        CMP --&gt;|"Val Acc thấp hơn kỷ lục"| KEEP["Bỏ qua không cập nhật Best"]
+        
+        SAVE_BEST --&gt; LOAD_BEST["load_best_model_at_end=True: Khóa trọng số tối ưu nhất"]
+        LOAD_BEST --&gt; EXPORT_MODEL["Lưu trữ an toàn: outputs/final_model/model.safetensors"]
+    end
+
+    subgraph IndependentVerificationAudit["5. Kiểm Định Độc Lập Sau Huấn Luyện (Test Set Audit)"]
+        EXPORT_MODEL --&gt; TEST_EVAL["Suy luận trên Test Set độc lập (200 mẫu)"]
+        TEST_EVAL --&gt; TEST_METRICS["Đối soát chỉ số động: Accuracy 74.50%, Macro F1 74.27%, Loss 0.5565"]
+        TEST_METRICS --&gt; STAT_TESTS["Kiểm định thống kê: Wilson CI [68.04%, 80.04%], McNemar, Fisher"]
+        STAT_TESTS --&gt; VERIFY_SUITE["Bộ kiểm thử tự động src/verify_all.py (5/5 tests PASSED 100%)"]
+    end
+</pre></code>
 <h4>3.2.3 Quy trình 7 bước Fine-tuning chuẩn</h4>
 <table>
 <tr><th>Bước</th><th>Tên bước</th><th>Nội dung triển khai</th></tr>

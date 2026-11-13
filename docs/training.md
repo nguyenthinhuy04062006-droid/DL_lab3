@@ -26,6 +26,56 @@ graph TD
 6. **Bước 6 — Baseline & Huấn luyện:** Đo độ chính xác ban đầu trên tập Val (đạt 44.00%), chạy `trainer.train()` qua 2 epochs, tự động lưu model tốt nhất vào `outputs/final_model/`.
 7. **Bước 7 — Đánh giá toàn diện:** Đánh giá trên tập Test độc lập, đo Accuracy, F1, Wilson 95% CI, xuất ma trận nhầm lẫn và danh sách ca lỗi.
 
+### 1.2. Sơ đồ giám sát huấn luyện & kiểm soát mô hình (Training Monitoring Diagram):
+
+Sơ đồ chi tiết luồng giám sát metric qua từng step, ghi nhận telemetry log, kiểm tra phân kỳ hàm mất mát và cơ chế tự động khóa checkpoint tối ưu (`load_best_model_at_end`):
+
+```mermaid
+flowchart TD
+    subgraph DataFeeding["1. Dữ liệu và Phân phối Lô (Batch Feeding)"]
+        D1["Train Dataset (800 mẫu IMDb)"] --> BATCH["DataLoader và DataCollatorWithPadding (Batch size = 16)"]
+        D2["Validation Dataset (200 mẫu IMDb)"] --> VAL_BATCH["Validation Loader (Batch size = 32)"]
+    end
+
+    subgraph ForwardBackwardOptimization["2. Lan truyền và Cập nhật Trọng số (Optimization Loop)"]
+        BATCH --> FWD["Forward Pass: DistilBERT + Classification Head"]
+        FWD --> LOSS["Tính Cross-Entropy Loss"]
+        LOSS --> BACK["Backward Pass: Tính toán Gradient"]
+        BACK --> OPT["Bộ tối ưu AdamW (lr=2e-5, weight_decay=0.01)"]
+        OPT --> UPDATE["Cập nhật trọng số toàn mô hình (100 steps)"]
+    end
+
+    subgraph RealTimeMonitorEngine["3. Hệ Thống Giám Sát Thời Gian Thực (Monitoring Engine)"]
+        LOSS -.-> LOG_LOSS["Loss Logger (logging_steps=10): Ghi nhận Training Loss"]
+        VAL_BATCH -.-> EVAL_ENGINE["Evaluation Engine (eval_strategy='epoch'): Tính Val Loss, Val Accuracy"]
+        LOG_LOSS --> LOG_HIST["trainer.state.log_history (Telemetry Stream)"]
+        EVAL_ENGINE --> LOG_HIST
+        
+        LOG_HIST --> METRIC_TABLE["Bảng theo dõi tiến trình huấn luyện (Epoch 0, 1, 2)"]
+        LOG_HIST --> CURVES["Biểu đồ học tập: training_loss_curve.png, training_accuracy_curve.png"]
+    end
+
+    subgraph OverfittingAndModelSelection["4. Kiểm Soát Quá Khớp và Lựa Chọn Best Model"]
+        EVAL_ENGINE --> CHECK_DIV{"Kiểm tra phân kỳ Loss (Overfitting Check)"}
+        CHECK_DIV -->|"Val Loss giảm đồng quy: 0.6974 -> 0.5118"| HEALTHY["Hội tụ bình thường (No Overfitting)"]
+        CHECK_DIV -->|"Val Loss tăng trong khi Train Loss giảm"| WARN["Cảnh báo quá khớp (Overfitting Alert)"]
+        
+        EVAL_ENGINE --> CMP{"So sánh Val Accuracy với kỷ lục trước đó"}
+        CMP -->|"Val Acc đạt đỉnh: 76.50% tại Epoch 2"| SAVE_BEST["Checkpointing: outputs/checkpoints/checkpoint-100"]
+        CMP -->|"Val Acc thấp hơn kỷ lục"| KEEP["Bỏ qua không cập nhật Best"]
+        
+        SAVE_BEST --> LOAD_BEST["load_best_model_at_end=True: Khóa trọng số tối ưu nhất"]
+        LOAD_BEST --> EXPORT_MODEL["Lưu trữ an toàn: outputs/final_model/model.safetensors"]
+    end
+
+    subgraph IndependentVerificationAudit["5. Kiểm Định Độc Lập Sau Huấn Luyện (Test Set Audit)"]
+        EXPORT_MODEL --> TEST_EVAL["Suy luận trên Test Set độc lập (200 mẫu)"]
+        TEST_EVAL --> TEST_METRICS["Đối soát chỉ số động: Accuracy 74.50%, Macro F1 74.27%, Loss 0.5565"]
+        TEST_METRICS --> STAT_TESTS["Kiểm định thống kê: Wilson CI [68.04%, 80.04%], McNemar, Fisher"]
+        STAT_TESTS --> VERIFY_SUITE["Bộ kiểm thử tự động src/verify_all.py (5/5 tests PASSED 100%)"]
+    end
+```
+
 ---
 
 ## 2. Bảng Cấu Hình Siêu Tham Số (Hyperparameters)
