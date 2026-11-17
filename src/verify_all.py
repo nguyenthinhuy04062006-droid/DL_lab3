@@ -191,13 +191,14 @@ def test_4_model_checkpoint_reload_and_reproducibility() -> None:
         print(f"   [INFO] Checkpoint trên đĩa ({actual_hash[:16]}...) là bản lưu cục bộ độc lập với manifest.")
 
     # 2. Nạp lại mô hình và tokenizer từ đĩa
-    tokenizer = AutoTokenizer.from_pretrained(str(FINAL_MODEL_DIR))
-    model = AutoModelForSequenceClassification.from_pretrained(str(FINAL_MODEL_DIR))
+    tokenizer = AutoTokenizer.from_pretrained(str(FINAL_MODEL_DIR), local_files_only=True)
+    model = AutoModelForSequenceClassification.from_pretrained(str(FINAL_MODEL_DIR), local_files_only=True)
     model.eval()
 
     # 3. Thử nghiệm suy luận mẫu
     sample_text = "The cinematography was breathtaking and acting was superb!"
     inputs = tokenizer(sample_text, return_tensors="pt", truncation=True, max_length=128)
+    inputs = {k: v for k, v in inputs.items() if k in ("input_ids", "attention_mask")}
     with torch.no_grad():
         logits = model(**inputs).logits
         probs = F.softmax(logits, dim=-1)[0].tolist()
