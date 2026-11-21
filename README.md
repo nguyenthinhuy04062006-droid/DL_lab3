@@ -34,13 +34,48 @@ flowchart LR
 
 ```text
 DL_lab3/
-├── README.md, REPORT.md, RULES.md, requirements.txt
-├── docs/           # 9 tài liệu chuyên đề: data, model, training, evaluation, demo, audit...
-├── notebooks/      # Practice3_HuggingFace_Final.ipynb (53 cells chuẩn hóa), .html
-├── outputs/        # REPORT.html, final_model/ (safetensors), checkpoints/
-│   └── reports/    # final_metrics.json, predictions.csv, error_analysis.csv, 12 tệp png
-└── src/            # 01_sentiment_analysis.py, 02_train_finetune.py, 03_predict_finetuned.py,
-                    # pipeline_utils.py, generate_data_charts.py, verify_all.py
+├── .gitignore                              # Loại trừ tệp nhị phân lớn (*.safetensors), checkpoints và cache
+├── README.md                               # Tài liệu tổng quan dự án, hướng dẫn cài đặt và vận hành
+├── REPORT.md                               # Báo cáo học thuật chi tiết 8 chương về quá trình thực nghiệm
+├── RULES.md                                # Quy chuẩn dự án: Khoa học dữ liệu, Kỹ thuật phần mềm & Ngôn ngữ
+├── requirements.txt                        # Danh sách phụ thuộc: transformers, datasets, evaluate, torch...
+├── docs/                                   # Hệ thống 9 tài liệu kỹ thuật chuyên đề (toàn bộ <= 200 dòng)
+│   ├── AUDIT_LOG.md                        # Nhật ký kiểm toán 5 giai đoạn, khắc phục 9 vấn đề kỹ thuật
+│   ├── data.md                             # Báo cáo phân tích dữ liệu IMDb, phân phối nhãn, độ dài và PCA 2D
+│   ├── demo.md                             # Hướng dẫn chạy thử nghiệm suy luận dòng lệnh CLI (Inference Demo)
+│   ├── evaluation.md                       # Đặc tả đánh giá định lượng, ma trận nhầm lẫn và kiểm định thống kê
+│   ├── labs3-description.md                # Báo cáo khoa học tổng quan đề tài và kiến trúc giải pháp
+│   ├── model.md                            # Đặc tả kiến trúc DistilBERT, cơ chế Attention và Classification Head
+│   ├── plan-progress-status.md             # Kế hoạch chi tiết, tiến độ các giai đoạn và danh mục sản phẩm
+│   ├── REPORT.md                           # Bản sao lưu trữ báo cáo kỹ thuật dự án trong thư mục docs
+│   └── training.md                         # Quy trình huấn luyện 7 bước, siêu tham số và tối ưu hóa
+├── notebooks/                              # Thư mục thực thi Jupyter Notebook
+│   ├── Practice3_HuggingFace_Final.ipynb   # Notebook thực hành chính — 53 cells chuẩn hóa (23 code cells)
+│   └── Practice3_HuggingFace_Final.html    # Bản kết xuất tĩnh HTML từ notebook để xem nhanh trên trình duyệt
+├── outputs/                                # Thư mục kết quả thực nghiệm và tài sản xuất bản
+│   ├── REPORT.html                         # Báo cáo độc lập HTML chuẩn xuất bản, nhúng trực tiếp 10 hình ảnh/bảng
+│   ├── REPORT.md                           # Bản sao báo cáo thực hành đồng bộ với thư mục gốc
+│   ├── final_model/                        # Mô hình tối ưu được lựa chọn sau huấn luyện (loại trừ khỏi Git)
+│   │   ├── config.json, tokenizer.json, tokenizer_config.json, training_args.bin
+│   │   └── model.safetensors               # Trọng số mô hình định dạng SafeTensors an toàn (255.43 MB)
+│   └── reports/                            # 24 tệp báo cáo số liệu thực nghiệm, manifests và biểu đồ đồ họa
+│       ├── final_metrics.json              # Tổng hợp chỉ số hiệu năng thực nghiệm, baselines và kiểm định
+│       ├── predictions.csv                 # Toàn bộ 200 mẫu Test kèm logits, xác suất, confidence và kết quả
+│       ├── classification_report.csv       # Bảng chi tiết Precision, Recall, F1-score và Support từng lớp
+│       ├── confusion_matrix.csv            # Ma trận nhầm lẫn dạng bảng: TN=84, FP=20, FN=31, TP=65
+│       ├── error_analysis.csv              # Danh sách chi tiết 51 ca dự đoán sai kèm logits, xác suất và văn bản
+│       ├── data_manifest.csv, data_manifest.json, run_manifest.json
+│       └── *.png                           # 17 biểu đồ và bảng kết xuất đồ họa (Curves, Matrix, EDA, Tables)
+└── src/                                    # Mã nguồn phát triển hệ thống pipeline (9 scripts mô-đun hóa)
+    ├── 01_sentiment_analysis.py            # Bài 1: Phân tích cảm xúc với Pretrained Model SST-2, so sánh Softmax
+    ├── 02_train_finetune.py                # Bài 2: Quy trình 7 bước Fine-tuning DistilBERT trên IMDb, cô lập Test Set
+    ├── 03_predict_finetuned.py             # Script CLI nạp Checkpoint đã lưu để dự đoán cảm xúc câu văn bản mới
+    ├── export_tables_as_images.py          # Tự động xuất 5 bảng số liệu định lượng thành tệp hình ảnh PNG
+    ├── generate_data_charts.py             # Sinh biểu đồ phân tích dữ liệu (Label Distribution, Token Length, PCA)
+    ├── generate_dynamic_plots.py           # Sinh đồ thị thực nghiệm (Confusion Matrix, Test Comparison, Curves)
+    ├── generate_html_report.py             # Tạo báo cáo độc lập REPORT.html nhúng toàn bộ biểu đồ và bảng PNG
+    ├── pipeline_utils.py                   # Thư viện tiện ích dùng chung: phân chia dữ liệu, manifests, tính metrics
+    └── verify_all.py                       # Bộ kiểm thử hồi quy tự động 5 pha kiểm tra toàn vẹn toàn diện hệ thống
 ```
 
 ---
