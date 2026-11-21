@@ -23,7 +23,7 @@
 
 ### 2.1 Kiến trúc DistilBERT & Sequence Classification Head
 - **DistilBERT:** Bản nén tri thức (Knowledge Distillation) từ BERT-base, giảm 40% tham số (66M so với 110M), tăng tốc độ suy luận 60% mà vẫn bảo lưu hơn 97% năng lực hiểu ngôn ngữ.
-- **Classification Head:** Vector ẩn của token `[CLS]` ($\mathbf{h}_{\text{CLS}} \in \mathbb{R}^{768}$) đi qua tầng `pre_classifier` ($\text{Linear}(768 \to 768) + \text{ReLU}$), tầng `Dropout}(p=0.2)$ và tầng `classifier` ($\text{Linear}(768 \to 2)$) để tạo ra logits thô $\mathbf{z} = [z_0, z_1]$.
+- **Classification Head:** Vector ẩn của token `[CLS]` ($\mathbf{h}_{\text{CLS}} \in \mathbb{R}^{768}$) đi qua tầng `pre_classifier` ($\text{Linear}(768 \to 768) + \text{ReLU}$), tầng `Dropout(p=0.2)` và tầng `classifier` ($\text{Linear}(768 \to 2)$) để tạo ra logits thô $\mathbf{z} = [z_0, z_1]$.
 - **Xác suất Softmax:** Chuyển đổi logits sang phân phối xác suất hợp lệ:
   $$P(y = c \mid \mathbf{x}) = \frac{e^{z_c}}{\sum_{j=0}^{1} e^{z_j}}, \quad c \in \{0, 1\}$$
 

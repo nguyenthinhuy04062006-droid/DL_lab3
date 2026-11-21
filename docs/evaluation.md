@@ -5,7 +5,7 @@ Nguồn dữ liệu: [`outputs/reports/final_metrics.json`](../outputs/reports/f
 
 ---
 
-## 1. KẾT QUẢ ĐO LƯỜNG TỔNG QUÁT (BENCHMARK RESULTS)
+## 1. Kết Quả Đo Lường Tổng Quát (Benchmark Results)
 
 | Chỉ số đánh giá | Untrained Baseline (Val) | Majority Baseline (Test) | Fine-tuned DistilBERT (Test) | Tăng trưởng ròng (+ Gain) |
 |:---|:---:|:---:|:---:|:---:|
@@ -25,7 +25,7 @@ Nguồn dữ liệu: [`outputs/reports/final_metrics.json`](../outputs/reports/f
 
 ---
 
-## 2. BÁO CÁO CHI TIẾT THEO LỚP (PER-CLASS REPORT)
+## 2. Báo Cáo Chi Tiết Theo Lớp (Per-class Report)
 
 | Lớp nhãn | Precision | Recall | F1-Score | Số mẫu thực tế (Support) |
 |:---|:---:|:---:|:---:|:---:|
@@ -38,7 +38,7 @@ Nguồn dữ liệu: [`outputs/reports/final_metrics.json`](../outputs/reports/f
 
 ---
 
-## 3. MA TRẬN NHẦM LẪN (CONFUSION MATRIX)
+## 3. Ma Trận Nhầm Lẫn (Confusion Matrix)
 
 $$\mathbf{C} = \begin{bmatrix} TN & FP \\ FN & TP \end{bmatrix} = \begin{bmatrix} 84 & 20 \\ 31 & 65 \end{bmatrix}$$
 
@@ -50,7 +50,7 @@ $$\mathbf{C} = \begin{bmatrix} TN & FP \\ FN & TP \end{bmatrix} = \begin{bmatrix
 
 ---
 
-## 4. TÁC ĐỘNG CỦA CẮT CỤT ĐỘ DÀI & KIỂM ĐỊNH FISHER
+## 4. Tác Động Của Cắt Cụt Độ Dài & Kiểm Định Fisher
 
 | Phân nhóm kiểm thử | Số lượng mẫu | Số ca đoán sai | Tỷ lệ lỗi (%) | Độ chính xác (%) | Wilson 95% CI (Độ chính xác) |
 |:---|:---:|:---:|:---:|:---:|:---:|
@@ -65,16 +65,18 @@ $$\mathbf{C} = \begin{bmatrix} TN & FP \\ FN & TP \end{bmatrix} = \begin{bmatrix
 
 ---
 
-## 5. PHÂN LOẠI NGUYÊN NHÂN TRÊN 51 CA DỰ ĐOÁN SAI
+## 5. Phân Loại Nguyên Nhân Trên 51 Ca Dự Đoán Sai
+
 Dựa trên tệp nhật ký chi tiết [`outputs/reports/error_analysis.csv`](../outputs/reports/error_analysis.csv):
-1. **Mixed Sentiment (Cảm xúc hỗn hợp):** Bài viết liệt kê nhiều điểm trừ ở thân bài nhưng câu kết luận lại khen ngợi. Mật độ từ ngữ tiêu cực dày đặc lấn át phân phối Attention.
-2. **Contextual Confounding (Nhiễu tâm trạng cá nhân):** Người xem dùng từ tiêu cực miêu tả tâm trạng bản thân (*"I had a horrid day but this movie grabbed me"*) chứ không chê bộ phim. Mô hình chưa tách biệt được tâm lý người xem với đối tượng được đánh giá.
-3. **Sarcasm & Cult-movie (Châm biếm / Khen giễu nhại):** Dùng các từ chê bai (*"is a mess", "bad hair", "bad flick"*) để biểu đạt sự thích thú với phim hạng B kinh điển.
-4. **Negation (Phủ định đa tầng):** Cấu trúc đảo ngữ phức tạp (*"not quite as bad as"*) vượt quá biên độ nhận diện ngữ cảnh ngắn.
+1. **Mixed Sentiment (Cảm xúc hỗn hợp):** Bài viết liệt kê nhiều điểm trừ ở thân bài nhưng câu kết luận lại khen ngợi. Mật độ từ ngữ tiêu cực dày đặc lấn át phân phối Attention (ví dụ Index 180, độ tự tin 80.23%).
+2. **Contextual Confounding (Nhiễu tâm trạng cá nhân):** Người xem dùng từ tiêu cực miêu tả tâm trạng bản thân (*"I had a horrid day but this movie grabbed me"*) chứ không chê bộ phim (ví dụ Index 88, độ tự tin 82.04%).
+3. **Sarcasm & Cult-movie (Châm biếm / Khen giễu nhại):** Dùng các từ chê bai (*"is a mess", "bad hair", "bad flick"*) để biểu đạt sự thích thú với phim kinh điển hạng B (ví dụ Index 103, độ tự tin 76.10%).
+4. **Negation (Phủ định đa tầng):** Cấu trúc đảo ngữ phức tạp vượt quá biên độ nhận diện ngữ cảnh ngắn.
 
 ---
 
-## 6. DANH MỤC TỆP ĐỐI SOÁT KIỂM TOÁN
+## 6. Danh Mục Tệp Đối Soát Kiểm Toán
+
 - **Dữ liệu suy luận 200 mẫu:** [`outputs/reports/predictions.csv`](../outputs/reports/predictions.csv)
 - **Báo cáo phân loại Scikit-Learn:** [`outputs/reports/classification_report.csv`](../outputs/reports/classification_report.csv)
 - **Ma trận nhầm lẫn:** [`outputs/reports/confusion_matrix.csv`](../outputs/reports/confusion_matrix.csv)

@@ -1,19 +1,20 @@
 # ĐẶC TẢ KIẾN TRÚC MÔ HÌNH (MODEL.MD)
 
-Tài liệu kỹ thuật đặc tả chi tiết kiến trúc DistilBERT, cơ chế Attention, phân tầng mạng, Classification Head và quy trình kiểm chứng thực nghiệm trong khuôn khổ Laboratory 3.
+Tài liệu kỹ thuật đặc tả chi tiết kiến trúc DistilBERT, cơ chế Attention, phân tầng mạng, Classification Head và quy trình kiểm chứng thực nghiệm trong khuôn khổ Practice 3.
 
 ---
 
-## 1. MỤC TIÊU & NGUỒN GỐC THAM SỐ
+## 1. Mục Tiêu & Nguồn Gốc Tham Số
+
 - **Nhiệm vụ:** Phân loại cảm xúc nhị phân (Binary Sentiment Analysis) trên tập dữ liệu IMDb Movie Reviews (0: NEGATIVE, 1: POSITIVE) với môi trường tối ưu hóa CPU-First.
-- **Mô hình suy luận (Inference):** `distilbert/distilbert-base-uncased-finetuned-sst-2-english` (Pretrained SST-2, 91.3% test accuracy).
-- **Mô hình nền tảng (Fine-tuning):** `distilbert/distilbert-base-uncased` (Pretrained Masked Language Modeling trên BookCorpus & English Wikipedia).
+- **Mô hình suy luận (Exercise 1):** `distilbert/distilbert-base-uncased-finetuned-sst-2-english` (Pretrained SST-2, 91.3% test accuracy).
+- **Mô hình nền tảng (Exercise 2):** `distilbert/distilbert-base-uncased` (Pretrained Masked Language Modeling trên BookCorpus & English Wikipedia).
 - **Mô hình xuất xưởng:** `outputs/final_model/model.safetensors` (66.955.010 tham số, 255.43 MB).
 - **Tác giả & Tham chiếu:** Sanh et al. (NeurIPS 2019) — chưng cất tri thức (Knowledge Distillation) từ BERT-base xuống bản thu nhỏ 40% tham số, tăng 60% tốc độ suy luận và giữ lại >97% năng lực hiểu ngôn ngữ tự nhiên.
 
 ---
 
-## 2. SO SÁNH THÔNG SỐ VỚI BERT-BASE
+## 2. So Sánh Thông Số Với BERT-base
 
 | Đặc tính kiến trúc | BERT-base (`bert-base-uncased`) | DistilBERT (`distilbert-base-uncased`) | Mức độ tối ưu hóa |
 |:---|:---:|:---:|:---|
@@ -27,7 +28,8 @@ Tài liệu kỹ thuật đặc tả chi tiết kiến trúc DistilBERT, cơ ch�
 
 ---
 
-## 3. CƠ CHẾ SELF-ATTENTION VÀ PHÂN TẦNG MÔ HÌNH
+## 3. Cơ Chế Self-Attention và Phân Tầng Mô Hình
+
 Mỗi đầu Attention tính điểm tương quan giữa các token trong chuỗi thông qua ba ma trận Query, Key, Value:
 $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V, \quad d_k = \frac{d_{\text{model}}}{12} = 64$$
 
@@ -46,7 +48,7 @@ flowchart TD
 
 ---
 
-## 4. PHÂN BỔ THAM SỐ CHI TIẾT (MODEL PARAMETERS PROFILING)
+## 4. Phân Bổ Tham Số Chi Tiết (Model Parameters Profiling)
 
 | Khối thành phần | Số lượng tham số | Tỷ lệ (%) | Trạng thái trong Fine-Tuning |
 |:---|:---:|:---:|:---|
@@ -58,7 +60,7 @@ flowchart TD
 
 ---
 
-## 5. ĐẶC TẢ ĐẦU VÀO VÀ ĐẦU RA (INPUT / OUTPUT SPECIFICATION)
+## 5. Đặc Tả Đầu Vào và Đầu Ra (Input / Output Specification)
 
 ### 5.1. Input Specification
 - **`input_ids`:** Tensor mã định danh token nguyên (`torch.int64`), kích thước `[B, L]`. `[CLS]` = ID 101, `[SEP]` = ID 102, `[PAD]` = ID 0.
@@ -74,8 +76,9 @@ flowchart TD
 
 ---
 
-## 6. QUY TRÌNH GIÁM SÁT VÀ LỰA CHỌN MÔ HÌNH TỐI ƯU
+## 6. Quy Trình Giám Sát và Lựa Chọn Mô Hình Tối Ưu
+
 1. **Theo dõi thời gian thực:** Ghi nhận Training Loss mỗi 10 steps. Đánh giá Validation Loss và Accuracy ở cuối mỗi Epoch.
-2. **Kiểm tra Overfitting:** Train Loss giảm từ ~0.68 về ~0.50, Val Loss giảm đồng quy từ 0.6974 về 0.5118 $\implies$ Không có phân kỳ, không bị quá khớp.
+2. **Kiểm tra Overfitting:** Train Loss giảm từ 0.6155 về 0.5032, Val Loss giảm đồng quy từ 0.6974 về 0.5118 $\implies$ Không có phân kỳ, không bị quá khớp.
 3. **Cơ chế chọn Checkpoint (`load_best_model_at_end = True`):** Tự động chọn mô hình đạt kỷ lục Validation Accuracy cao nhất (76.50% tại Epoch 2) để xuất xưởng thành `model.safetensors`.
 4. **Kiểm thử hồi quy tự động:** Đạt 5/5 bài kiểm thử tuyệt đối tại `src/verify_all.py` (cấu trúc, toán học, artifacts, reload suy luận, zero emoji).

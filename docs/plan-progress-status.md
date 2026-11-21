@@ -38,7 +38,7 @@ gantt
 - [x] Tạo kịch bản `src/01_sentiment_analysis.py`.
 - [x] Chạy suy luận qua `pipeline("sentiment-analysis")`.
 - [x] Phân tích cấu trúc Tokenizer: WordPiece sub-words, input IDs, attention mask.
-- [x] Tính xác suất thủ công từ logits qua Softmax và so khớp kết quả với `pipeline`.
+- [x] Tính xác suất thủ công từ logits qua Softmax và so khớp kết quả với `pipeline` (sai số $= 0.00$).
 
 ### Giai đoạn 2: Xử lý Dữ liệu & Thiết lập Mốc Tham Chiếu
 - [x] Tải bộ dữ liệu `stanfordnlp/imdb`.
@@ -49,9 +49,9 @@ gantt
 
 ### Giai đoạn 3: Huấn Luyện Fine-tuning Mô Hình (Exercise 2)
 - [x] Tạo kịch bản `src/02_train_finetune.py`.
-- [x] Thiết lập `TrainingArguments`: learning rate $2 \times 10^{-5}$, 2 epochs, batch size 16, weight decay 0.01, seed 42.
+- [x] Thiết lập `TrainingArguments`: learning rate $2 \times 10^{-5}$, 2 epochs (100 steps), batch size 16, weight decay 0.01, seed 42.
 - [x] Tối ưu hóa thời gian chạy trên CPU (391.42s ~6.52 phút).
-- [x] Lưu checkpoint tối ưu vào `outputs/final_model/model.safetensors`.
+- [x] Lưu checkpoint tối ưu vào `outputs/final_model/model.safetensors` (255.43 MB).
 
 ### Giai đoạn 4: Đánh Giá Kết Quả & Phân Tích Lỗi
 - [x] Đánh giá trên tập Test độc lập: Accuracy **74.50%**, Macro F1 **74.27%**.
@@ -59,12 +59,12 @@ gantt
 - [x] Xuất báo cáo phân loại chi tiết (`outputs/reports/classification_report.csv`).
 - [x] Xuất ma trận nhầm lẫn (`outputs/reports/confusion_matrix.csv`, `confusion_matrix.png`).
 - [x] Phân tích nguyên nhân trên 51 ca dự đoán sai (`outputs/reports/error_analysis.csv`).
-- [x] Kiểm định tác động cắt ngắn độ dài token qua Fisher's Exact Test.
+- [x] Kiểm định tác động cắt ngắn độ dài token qua Fisher's Exact Test ($p = 0.8153$).
 
 ### Giai đoạn 5: Đóng Gói Sản Phẩm & Chuẩn Hóa Tài Liệu
 - [x] Tạo công cụ dự đoán nhanh qua CLI: `src/03_predict_finetuned.py`.
-- [x] Tích hợp nội dung hoàn chỉnh vào: `notebooks/Practice3_HuggingFace_Final.ipynb`.
-- [x] Chuẩn hóa toàn bộ hệ thống tài liệu kỹ thuật chuyên đề trong thư mục `/docs`.
+- [x] Tích hợp nội dung hoàn chỉnh vào: `notebooks/Practice3_HuggingFace_Final.ipynb` (53 cells, 23 code cells).
+- [x] Chuẩn hóa toàn bộ hệ thống tài liệu kỹ thuật chuyên đề trong thư mục `/docs` (toàn bộ $\le 200$ dòng).
 
 ---
 
@@ -75,7 +75,7 @@ gantt
 | **Mã nguồn chính** | `src/01_sentiment_analysis.py`<br>`src/02_train_finetune.py`<br>`src/03_predict_finetuned.py` | Pipeline suy luận SST-2, quy trình 7 bước fine-tuning DistilBERT và CLI dự đoán câu mới. |
 | **Tiện ích & Kiểm thử** | `src/pipeline_utils.py`<br>`src/verify_all.py`<br>`src/export_tables_as_images.py` | Quản lý dữ liệu, manifests, bộ kiểm thử tự động 5 pha và kết xuất bảng định lượng. |
 | **Đồ họa & Trực quan** | `src/generate_data_charts.py`<br>`src/generate_dynamic_plots.py`<br>`src/generate_html_report.py` | Sinh 7 biểu đồ phân tích (EDA, PCA, Curves, Matrix) và báo cáo HTML tổng hợp. |
-| **Jupyter Notebook** | `notebooks/Practice3_HuggingFace_Final.ipynb`<br>`notebooks/Practice3_HuggingFace_Final.html` | Notebook 41 cells chuẩn hóa, nhúng sẵn toàn bộ kết quả và bản kết xuất tĩnh HTML. |
+| **Jupyter Notebook** | `notebooks/Practice3_HuggingFace_Final.ipynb`<br>`notebooks/Practice3_HuggingFace_Final.html` | Notebook 53 cells chuẩn hóa, nhúng sẵn toàn bộ kết quả và bản kết xuất tĩnh HTML. |
 | **Trọng số mô hình** | `outputs/final_model/model.safetensors` | Trọng số DistilBERT tối ưu sau 2 epochs (255.43 MB) an toàn SafeTensors. |
 | **Báo cáo số liệu** | `outputs/reports/final_metrics.json`<br>`outputs/reports/predictions.csv`<br>`outputs/reports/error_analysis.csv` | Hồ sơ số liệu thực nghiệm, 200 dự đoán test set và 51 ca lỗi chi tiết. |
 | **Tài liệu dự án** | `README.md`, `REPORT.md`, `RULES.md`<br>`docs/*.md` (9 tài liệu chuyên đề) | Hệ thống tài liệu kỹ thuật hoàn chỉnh tuân thủ nguyên tắc Zero Emoji và dưới 200 dòng. |

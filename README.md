@@ -36,7 +36,7 @@ flowchart LR
 DL_lab3/
 ├── README.md, REPORT.md, RULES.md, requirements.txt
 ├── docs/           # 9 tài liệu chuyên đề: data, model, training, evaluation, demo, audit...
-├── notebooks/      # Practice3_HuggingFace_Final.ipynb (41 cells chuẩn hóa), .html
+├── notebooks/      # Practice3_HuggingFace_Final.ipynb (53 cells chuẩn hóa), .html
 ├── outputs/        # REPORT.html, final_model/ (safetensors), checkpoints/
 │   └── reports/    # final_metrics.json, predictions.csv, error_analysis.csv, 12 tệp png
 └── src/            # 01_sentiment_analysis.py, 02_train_finetune.py, 03_predict_finetuned.py,
@@ -107,7 +107,7 @@ python src/verify_all.py
 ## 7. Verification & Limitations
 
 ### 7.1 Kiểm thử hồi quy tự động (`python src/verify_all.py`)
-- Test 1: Cấu trúc Notebook 41 cells, 18 code cells thực thi tuần tự, đủ 4 biểu đồ canonical (PASSED).
+- Test 1: Cấu trúc Notebook 53 cells, 23 code cells thực thi tuần tự, đủ 4 biểu đồ canonical (PASSED).
 - Test 2: Toàn vẹn 9 file báo cáo và kết quả thực nghiệm trong `outputs/reports/` (PASSED).
 - Test 3: Khớp số liệu toán học: Accuracy 74.50%, TN=84, FP=20, FN=31, TP=65 (PASSED).
 - Test 4: Mô hình lưu trữ `model.safetensors` nạp và suy luận chuẩn xác (PASSED).
